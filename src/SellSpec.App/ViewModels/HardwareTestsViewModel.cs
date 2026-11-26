@@ -171,6 +171,18 @@ public sealed partial class HardwareTestCardViewModel : ObservableObject, IDispo
         if (Outcome != TestOutcome.NotTested) Persist();
     }
 
+    partial void OnWifiConfirmedChanged(bool value) => PersistConfirmation();
+    partial void OnBluetoothConfirmedChanged(bool value) => PersistConfirmation();
+    partial void OnEthernetConfirmedChanged(bool value) => PersistConfirmation();
+    partial void OnUsbConfirmedChanged(bool value) => PersistConfirmation();
+    partial void OnVideoOutConfirmedChanged(bool value) => PersistConfirmation();
+
+    /// <summary>Connectivity confirmations are the evidence for a recorded outcome, so they are kept with it as they change.</summary>
+    private void PersistConfirmation()
+    {
+        if (!_refreshing && Outcome != TestOutcome.NotTested) Persist();
+    }
+
     private void Persist()
     {
         if (_refreshing) return;

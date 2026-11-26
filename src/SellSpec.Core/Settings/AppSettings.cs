@@ -85,14 +85,7 @@ public sealed class JsonSettingsStore : ISettingsStore
 
     public void Save(AppSettings settings)
     {
-        var directory = System.IO.Path.GetDirectoryName(_path);
-        if (!string.IsNullOrEmpty(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
         var json = JsonSerializer.Serialize(settings, SettingsJsonContext.Default.AppSettings);
-        var temp = _path + ".tmp";
-        File.WriteAllText(temp, json);
-        File.Move(temp, _path, overwrite: true);
+        AtomicFile.WriteAllText(_path, json);
     }
 }

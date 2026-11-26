@@ -77,7 +77,7 @@ Pure functions in `SellSpec.Core.Normalisation`:
 
 ### Remembered answers
 
-`Core.Sessions` keeps the seller's work between sessions without identifying the device. `DeviceKey` derives a key from public identity only (brand, product and model number; the motherboard for a custom build; nothing for virtual machines or placeholder firmware). `JsonSavedAnswersStore` holds one `SavedDeviceAnswers` (questionnaire plus test results) per key, newest first and capped, and refuses any write that fails `Redactor`. `SavedAnswersPolicy` decides, from pure inputs, whether a scan keeps the current session (same key), offers saved answers (seller chooses) or restores them outright (the first scan of an elevated relaunch).
+`Core.Sessions` keeps the seller's work between sessions without identifying the device. `DeviceKey` derives a key from public identity only (brand, product and model number; the motherboard for a custom build; nothing for virtual machines or placeholder firmware). `JsonSavedAnswersStore` holds one `SavedDeviceAnswers` (questionnaire plus test results) per key, newest first and capped, and refuses any write that fails `Redactor`. `SavedAnswersPolicy` decides, from pure inputs, whether a scan clears the current session (only for a positively different device), offers saved answers (seller chooses) or restores them outright (the first scan of an elevated relaunch). Writes go through `AtomicFile` (random temporary name, create-new, move) under a lock file, because the original and the elevated instance share the folder.
 
 ## Application layer
 

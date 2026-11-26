@@ -123,17 +123,26 @@ public sealed partial class SettingsViewModel : ObservableObject
         if (e.PropertyName == nameof(RememberAnswers))
         {
             // Turning it off is a privacy choice, so the file goes too; turning it on remembers the current answers at once.
-            if (RememberAnswers) _shell.Persistence.SaveNow();
-            else _shell.ClearSavedAnswers();
-            StatusMessage = RememberAnswers ? "Saved. Answers are remembered for each device model." : "Saved. Remembered answers were deleted.";
+            if (RememberAnswers)
+            {
+                _shell.Persistence.SaveNow();
+                StatusMessage = "Saved. Answers are remembered for each device model.";
+            }
+            else
+            {
+                StatusMessage = _shell.ClearSavedAnswers()
+                    ? "Saved. Remembered answers were deleted."
+                    : "Saved, but the remembered answers file could not be deleted (locked or not accessible). Use Clear remembered answers to try again.";
+            }
         }
     }
 
     [RelayCommand]
     private void ClearSavedAnswers()
     {
-        _shell.ClearSavedAnswers();
-        StatusMessage = "Remembered answers for every device were deleted. The answers in this session are unchanged.";
+        StatusMessage = _shell.ClearSavedAnswers()
+            ? "Remembered answers for every device were deleted. The answers in this session are unchanged."
+            : "The remembered answers file could not be deleted (locked or not accessible). Close other SellSpec windows and try again.";
     }
 
     [RelayCommand]

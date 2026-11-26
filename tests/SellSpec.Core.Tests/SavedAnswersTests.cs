@@ -44,6 +44,15 @@ public sealed class DeviceKeyTests
     }
 
     [Fact]
+    public void Separator_inside_a_component_cannot_merge_two_identities()
+    {
+        var a = Scenarios.StandardLaptop().Identity with { Manufacturer = Spec<string>.Firmware("Acme|Pro"), ProductName = Spec<string>.Firmware("X") };
+        var b = Scenarios.StandardLaptop().Identity with { Manufacturer = Spec<string>.Firmware("Acme"), ProductName = Spec<string>.Firmware("Pro|X") };
+        Assert.NotEqual(DeviceKey.For(a), DeviceKey.For(b));
+        Assert.Equal("acme%7Cpro|x|82xf", DeviceKey.For(a));
+    }
+
+    [Fact]
     public void Key_never_contains_a_private_identifier()
     {
         var key = DeviceKey.For(Scenarios.StandardLaptop())!;
@@ -178,7 +187,51 @@ public sealed class SavedAnswersStoreTests : IDisposable
 
         Assert.Contains("private identifier", ex.Findings);
         Assert.Equal(before, File.ReadAllText(_store.Path));
-        Assert.False(File.Exists(_store.Path + ".tmp"));
+        Assert.Empty(Directory.GetFiles(_directory, "*.tmp"));
+    }
+
+    [Fact]
+    public void Damaged_entries_are_dropped_or_repaired_instead_of_crashing()
+    {
+        Directory.CreateDirectory(_directory);
+        File.WriteAllText(_store.Path, """
+            { "Version": 1, "Devices": [
+              null,
+              { "DeviceLabel": "no key" },
+              { "DeviceKey": "a|b|c", "DeviceLabel": null, "Questionnaire": null, "Tests": [ null, { "Kind": "Keyboard", "Outcome": "Passed", "Source": "SellerConfirmed" } ] }
+            ] }
+            """);
+
+        var all = _store.All();
+
+        var only = Assert.Single(all);
+        Assert.Equal("a|b|c", only.DeviceKey);
+        Assert.Equal(string.Empty, only.DeviceLabel);
+        Assert.True(only.Questionnaire.IsEmpty);
+        Assert.Single(only.Tests);
+        Assert.False(only.IsEmpty);
+        Assert.NotNull(_store.Find("a|b|c"));
+    }
+
+    [Fact]
+    public void Locked_file_is_reported_not_hidden()
+    {
+        _store.Save(Entry(), Scenarios.PrivateIds);
+        using var holder = new FileStream(_store.Path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        Assert.Throws<IOException>(() => _store.Find(Entry().DeviceKey));
+        Assert.False(_store.Clear(), "A file that cannot be deleted must not be reported as cleared.");
+        Assert.True(File.Exists(_store.Path));
+    }
+
+    [Fact]
+    public void Notes_alone_count_as_answers()
+    {
+        var notesOnly = new SavedDeviceAnswers { DeviceKey = "k", Questionnaire = new ConditionQuestionnaire { KnownDefects = "Hinge creaks" } };
+        Assert.False(notesOnly.IsEmpty);
+
+        _store.Save(notesOnly, Scenarios.PrivateIds);
+        Assert.Equal("Hinge creaks", _store.Find("k")!.Questionnaire.KnownDefects);
     }
 
     [Fact]
@@ -226,12 +279,13 @@ public sealed class SavedAnswersPolicyTests
     }
 
     [Fact]
-    public void Rescan_keeps_the_session_only_for_the_same_device()
+    public void Rescan_clears_the_session_only_for_a_positively_different_device()
     {
-        Assert.True(SavedAnswersPolicy.KeepSessionAcrossRescan("a", "a"));
-        Assert.False(SavedAnswersPolicy.KeepSessionAcrossRescan("a", "b"));
-        Assert.False(SavedAnswersPolicy.KeepSessionAcrossRescan(null, "a"));
-        Assert.False(SavedAnswersPolicy.KeepSessionAcrossRescan("a", null));
+        Assert.True(SavedAnswersPolicy.IsDifferentDevice("a", "b"));
+        Assert.False(SavedAnswersPolicy.IsDifferentDevice("a", "a"));
+        Assert.False(SavedAnswersPolicy.IsDifferentDevice(null, "a"), "First identified scan keeps whatever was entered.");
+        Assert.False(SavedAnswersPolicy.IsDifferentDevice("a", null), "A cancelled or unidentifiable rescan is not a device change.");
+        Assert.False(SavedAnswersPolicy.IsDifferentDevice(null, null));
     }
 
     [Fact]

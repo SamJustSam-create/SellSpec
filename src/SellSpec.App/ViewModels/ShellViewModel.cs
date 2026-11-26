@@ -136,9 +136,10 @@ public sealed partial class ShellViewModel : ObservableObject
     [RelayCommand]
     public void RescanElevated()
     {
-        // The elevated instance restores the remembered answers, so make sure they are on disk first.
+        // The elevated instance restores the remembered answers, so make sure they are on disk first, and keep it
+        // looking in the same data folder.
         Persistence.Flush();
-        if (!ExternalLauncher.RelaunchElevated())
+        if (!ExternalLauncher.RelaunchElevated(_options.Portable))
         {
             ScanSummaryText = "Administrator rescan was not started.";
         }
@@ -157,17 +158,29 @@ public sealed partial class ShellViewModel : ObservableObject
     private void DiscardSavedAnswers()
     {
         if (Session.SavedAnswersOffer is not { } saved) return;
-        _answers.Remove(saved.DeviceKey);
+        try
+        {
+            _answers.Remove(saved.DeviceKey);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or Core.Privacy.RedactionException)
+        {
+            _logger.Log(LogLevel.Warning, "Answers", "Remembered answers could not be discarded.", ex);
+            Session.SavedAnswersStatus = "The saved answers could not be discarded: answers.json in the data folder is locked or not accessible. Try again.";
+            return; // The offer stays so the seller can retry or restore.
+        }
         Session.SavedAnswersOffer = null;
         Session.SavedAnswersStatus = "The saved answers for this model were discarded.";
     }
 
-    /// <summary>Forgets every remembered device (Settings). The current session is untouched.</summary>
-    public void ClearSavedAnswers()
+    /// <summary>Forgets every remembered device (Settings). The current session is untouched. Returns false if the file could not be deleted.</summary>
+    public bool ClearSavedAnswers()
     {
-        _answers.Clear();
+        Persistence.Cancel(); // A write still pending from an edit must not recreate the file.
+        var cleared = _answers.Clear();
         Session.SavedAnswersOffer = null;
-        Session.SavedAnswersStatus = null;
+        Session.SavedAnswersStatus = cleared ? null : "Remembered answers could not be deleted: answers.json in the data folder is locked or not accessible.";
+        if (!cleared) _logger.Log(LogLevel.Warning, "Answers", "answers.json could not be deleted.");
+        return cleared;
     }
 
     private void OfferSavedAnswers(string? deviceKey, bool isFirstScan)
@@ -175,7 +188,17 @@ public sealed partial class ShellViewModel : ObservableObject
         Session.SavedAnswersOffer = null;
         if (!SavedAnswersPolicy.CanRemember(Session.Settings.RememberAnswers, Session.IsDemo, deviceKey)) return;
 
-        var saved = _answers.Find(deviceKey!);
+        SavedDeviceAnswers? saved;
+        try
+        {
+            saved = _answers.Find(deviceKey!);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            _logger.Log(LogLevel.Warning, "Answers", "Remembered answers could not be read.", ex);
+            Session.SavedAnswersStatus = "Remembered answers could not be read: answers.json in the data folder is locked or not accessible.";
+            return;
+        }
         var action = SavedAnswersPolicy.Decide(saved, Session.HasAnswers, _options.ElevatedRescan && isFirstScan);
         // The key is model information only (see Core.Sessions.DeviceKey), so it is safe to log.
         _logger.Log(LogLevel.Info, "Answers", $"Device key '{deviceKey}': remembered answers {(saved is null ? "none" : "found")}, action {action}.");
@@ -218,6 +241,8 @@ public sealed partial class ShellViewModel : ObservableObject
     {
         if (IsScanning) return;
         IsScanning = true;
+        // Pending edits belong to the device on screen now, not to whatever the rescan finds.
+        Persistence.Flush();
         RescanCommand.NotifyCanExecuteChanged();
         ScanProgress = 0;
         ScanStatusText = Session.IsDemo ? "Loading demonstration device…" : "Scanning this computer…";
@@ -248,12 +273,13 @@ public sealed partial class ShellViewModel : ObservableObject
             // Answers and test results describe a device: keep them across a rescan of the same model, drop them
             // when the device changed, and offer back what an earlier session remembered.
             var deviceKey = DeviceKey.For(result.Snapshot);
-            if (!SavedAnswersPolicy.KeepSessionAcrossRescan(Session.CurrentDeviceKey, deviceKey))
+            if (SavedAnswersPolicy.IsDifferentDevice(Session.CurrentDeviceKey, deviceKey))
             {
                 Session.Tests.Clear();
                 Session.Questionnaire.Reset();
             }
-            Session.CurrentDeviceKey = deviceKey;
+            // A cancelled or incomplete rescan has no key; it is still the same machine, so keep remembering under the old one.
+            Session.CurrentDeviceKey = deviceKey ?? Session.CurrentDeviceKey;
             Session.ScanResult = result;
             OfferSavedAnswers(deviceKey, isFirstScan: _scanCount == 0);
             _scanCount++;

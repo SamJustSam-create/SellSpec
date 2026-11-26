@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using SellSpec.Core.Listing;
 using SellSpec.Core.Models;
 using SellSpec.Core.Privacy;
+using SellSpec.Core.Settings;
 using SellSpec.Core.Testing;
 
 namespace SellSpec.Core.Sessions;
@@ -37,8 +38,12 @@ public static partial class DeviceKey
 
     private static string? Text(Spec<string> spec) => spec.HasValue ? spec.Value : null;
 
+    // Components are joined with '|'; a '|' inside a component is escaped so two different identities can never
+    // collapse into the same key.
     private static string Join(params string?[] parts) =>
-        string.Join('|', parts.Select(p => p is null ? "-" : Whitespace().Replace(p.Trim().ToLowerInvariant(), " ")));
+        string.Join('|', parts.Select(p => p is null ? "-" : Escape(Whitespace().Replace(p.Trim().ToLowerInvariant(), " "))));
+
+    private static string Escape(string component) => component.Replace("%", "%25", StringComparison.Ordinal).Replace("|", "%7C", StringComparison.Ordinal);
 
     [GeneratedRegex(@"\s+")]
     private static partial Regex Whitespace();
@@ -75,7 +80,9 @@ internal sealed partial class SavedAnswersJsonContext : JsonSerializerContext
 
 public interface ISavedAnswersStore
 {
+    /// <summary>Throws <see cref="IOException"/> or <see cref="UnauthorizedAccessException"/> when the file exists but cannot be read; a corrupt file reads as empty.</summary>
     SavedDeviceAnswers? Find(string deviceKey);
+
     IReadOnlyList<SavedDeviceAnswers> All();
 
     /// <summary>
@@ -85,16 +92,20 @@ public interface ISavedAnswersStore
     void Save(SavedDeviceAnswers entry, PrivateIdentifiers privateIdentifiers);
 
     void Remove(string deviceKey);
-    void Clear();
+
+    /// <summary>Deletes everything remembered. Returns false when the file exists but could not be deleted.</summary>
+    bool Clear();
 }
 
 /// <summary>
 /// JSON file in the SellSpec data folder, newest device first and capped so a refurbisher's history stays small.
-/// Unreadable or corrupt files read as empty rather than failing the app; every write is redaction-checked and atomic.
+/// A corrupt file reads as empty rather than failing the app; every write is redaction-checked, atomic, and serialised
+/// across processes with a lock file (the original and the elevated instance share the folder).
 /// </summary>
 public sealed class JsonSavedAnswersStore : ISavedAnswersStore
 {
     public const int MaxDevices = 25;
+    private static readonly TimeSpan LockTimeout = TimeSpan.FromSeconds(2);
 
     private readonly string _path;
 
@@ -120,49 +131,68 @@ public sealed class JsonSavedAnswersStore : ISavedAnswersStore
         }
 
         var stamped = entry with { SavedAt = entry.SavedAt == default ? DateTimeOffset.Now : entry.SavedAt };
-        var others = Load().Devices.Where(d => !string.Equals(d.DeviceKey, entry.DeviceKey, StringComparison.Ordinal));
-        var devices = new[] { stamped }.Concat(others).Take(MaxDevices).ToList();
-        Write(new SavedAnswersFile { Devices = devices }, privateIdentifiers);
+        using (AcquireLock())
+        {
+            var others = Load().Devices.Where(d => !string.Equals(d.DeviceKey, entry.DeviceKey, StringComparison.Ordinal));
+            var devices = new[] { stamped }.Concat(others).Take(MaxDevices).ToList();
+            Write(new SavedAnswersFile { Devices = devices }, privateIdentifiers);
+        }
     }
 
     public void Remove(string deviceKey)
     {
-        var file = Load();
-        var remaining = file.Devices.Where(d => !string.Equals(d.DeviceKey, deviceKey, StringComparison.Ordinal)).ToList();
-        if (remaining.Count == file.Devices.Count) return;
-        if (remaining.Count == 0)
+        using (AcquireLock())
         {
-            Clear();
-            return;
+            var file = Load();
+            var remaining = file.Devices.Where(d => !string.Equals(d.DeviceKey, deviceKey, StringComparison.Ordinal)).ToList();
+            if (remaining.Count == file.Devices.Count) return;
+            if (remaining.Count == 0)
+            {
+                File.Delete(_path);
+                return;
+            }
+            Write(new SavedAnswersFile { Devices = remaining }, PrivateIdentifiers.Empty);
         }
-        Write(new SavedAnswersFile { Devices = remaining }, PrivateIdentifiers.Empty);
     }
 
-    public void Clear()
+    public bool Clear()
     {
         try
         {
             if (File.Exists(_path)) File.Delete(_path);
+            return !File.Exists(_path);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            // Best effort; the next Save overwrites the file anyway.
+            return false;
         }
     }
 
     private SavedAnswersFile Load()
     {
+        if (!File.Exists(_path)) return new SavedAnswersFile();
+        SavedAnswersFile? file;
         try
         {
-            if (!File.Exists(_path)) return new SavedAnswersFile();
-            var json = File.ReadAllText(_path);
-            var file = JsonSerializer.Deserialize(json, SavedAnswersJsonContext.Default.SavedAnswersFile);
-            return file is null || file.Devices is null ? new SavedAnswersFile() : file;
+            file = JsonSerializer.Deserialize(File.ReadAllText(_path), SavedAnswersJsonContext.Default.SavedAnswersFile);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        catch (JsonException)
         {
-            return new SavedAnswersFile();
+            return new SavedAnswersFile(); // Corrupt content is treated as nothing remembered; the next save overwrites it.
         }
+        if (file?.Devices is null) return new SavedAnswersFile();
+
+        // A hand-edited or damaged file must never crash a scan: drop entries without a key and fill in missing parts.
+        var devices = file.Devices
+            .Where(d => d is not null && !string.IsNullOrWhiteSpace(d.DeviceKey))
+            .Select(d => d with
+            {
+                DeviceLabel = d.DeviceLabel ?? string.Empty,
+                Questionnaire = d.Questionnaire ?? ConditionQuestionnaire.Empty,
+                Tests = (d.Tests ?? Array.Empty<HardwareTestResult>()).Where(t => t is not null).ToList(),
+            })
+            .ToList();
+        return new SavedAnswersFile { Version = file.Version, Devices = devices };
     }
 
     private void Write(SavedAnswersFile file, PrivateIdentifiers privateIdentifiers)
@@ -170,12 +200,27 @@ public sealed class JsonSavedAnswersStore : ISavedAnswersStore
         var json = JsonSerializer.Serialize(file, SavedAnswersJsonContext.Default.SavedAnswersFile);
         // Same guard as every export: a serial number typed into a note must never reach the disk.
         Redactor.EnsureClean(json, privateIdentifiers);
+        AtomicFile.WriteAllText(_path, json);
+    }
 
+    /// <summary>Holds a lock file for the read-modify-write so two SellSpec processes cannot interleave their saves.</summary>
+    private FileStream AcquireLock()
+    {
         var directory = System.IO.Path.GetDirectoryName(_path);
         if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-        var temp = _path + ".tmp";
-        File.WriteAllText(temp, json);
-        File.Move(temp, _path, overwrite: true);
+        var lockPath = _path + ".lock";
+        var deadline = DateTime.UtcNow + LockTimeout;
+        while (true)
+        {
+            try
+            {
+                return new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None, 1, FileOptions.DeleteOnClose);
+            }
+            catch (IOException) when (DateTime.UtcNow < deadline)
+            {
+                Thread.Sleep(50);
+            }
+        }
     }
 }
 
@@ -204,7 +249,10 @@ public static class SavedAnswersPolicy
         return isElevatedRescan ? SavedAnswersAction.Restore : SavedAnswersAction.Offer;
     }
 
-    /// <summary>A rescan keeps the current answers and test results only while it is still the same device.</summary>
-    public static bool KeepSessionAcrossRescan(string? previousKey, string? newKey) =>
-        previousKey is not null && newKey is not null && string.Equals(previousKey, newKey, StringComparison.Ordinal);
+    /// <summary>
+    /// A rescan drops the current answers and test results only when it has positively identified a different device.
+    /// An unidentifiable or cancelled scan is not evidence of a change, so the seller's work is kept.
+    /// </summary>
+    public static bool IsDifferentDevice(string? previousKey, string? newKey) =>
+        previousKey is not null && newKey is not null && !string.Equals(previousKey, newKey, StringComparison.Ordinal);
 }
