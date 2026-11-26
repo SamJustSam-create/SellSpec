@@ -2,6 +2,21 @@
 
 All notable changes to SellSpec are recorded here. The format follows Keep a Changelog; versions follow SemVer.
 
+## [0.1.1-alpha] – 2026-11-26
+
+Infrastructure release; no functional change to the application.
+
+### Added
+- GitHub Actions CI: Release build and the full test suite on every push and pull request to `main`.
+- Tag-driven release workflow: a read-only build job validates the tag (must be on `main`, exact `v<major>.<minor>.<patch>[-suffix]`, equal to the project version), builds, tests and publishes; a separate write-only job creates a draft release and publishes it once every asset is attached. Actions are pinned to commit SHAs; Dependabot tracks actions and NuGet packages.
+- `.gitattributes` so PDFs, images and executables are never line-ending converted on checkout.
+- Manual verification log in TESTING.md, including the 2026-11-26 laptop checklist pass.
+
+### Fixed
+- `SHA256SUMS.txt` is written with LF line endings so `sha256sum -c` works on Linux, macOS and Git Bash; the checksum script's default artifacts path works when run on its own.
+- Version parsing in the publish script treats an empty `VersionSuffix` as no suffix, so stable releases validate.
+- An order-dependent failure in the log sanitiser unit test.
+
 ## [0.1.0-alpha] – 2026-11-25
 
 First functional MVP.
