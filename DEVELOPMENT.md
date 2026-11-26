@@ -90,9 +90,9 @@ If the tag and the version disagree, the tag is malformed, or the tagged commit 
 
 ## Code signing
 
-Release executables are signed by [SignPath Foundation](https://signpath.org) through its free programme for open-source projects; [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) is the public policy that programme requires. There is no certificate in this repository or on any maintainer's machine. Signing happens inside the release workflow, and SignPath signs only builds it can trace to a run of that workflow on this repository (origin verification).
+Release executables are to be signed by [SignPath Foundation](https://signpath.org) through its free programme for open-source projects, once the project is approved and the repository is configured as described below; until then releases are unsigned. [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) is the public policy that programme requires. There is no certificate in this repository or on any maintainer's machine. Signing happens inside the release workflow, and SignPath signs only builds it can trace to a run of that workflow on this repository (origin verification).
 
-How the workflow signs:
+How the workflow signs when it is configured:
 
 1. `build/publish.ps1` produces the artifacts as usual.
 2. `build/signing.ps1 -Stage` copies the executables into `signing/unsigned` under fixed names (`SellSpec-singlefile.exe`, `SellSpec-selfcontained.exe`, `portable\SellSpec.exe`), and the workflow uploads that folder as a GitHub Actions artifact.
