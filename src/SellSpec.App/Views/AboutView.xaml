@@ -43,7 +43,7 @@
           <TextBlock Text="{Binding Runtime}" Style="{StaticResource CaptionText}" />
           <TextBlock Text="Running with administrator rights." Style="{StaticResource CaptionText}" Visibility="{Binding IsElevated, Converter={StaticResource BoolToVisibility}}" />
           <TextBlock Text="Demonstration mode (fictional device)." Style="{StaticResource CaptionText}" Visibility="{Binding IsDemo, Converter={StaticResource BoolToVisibility}}" />
-          <TextBlock Text="Copyright © 2026 SellSpec. All rights reserved." Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+          <TextBlock Text="Copyright © 2026 SellSpec contributors. Free software under the MIT Licence." Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
         </StackPanel>
       </Border>
     </StackPanel>

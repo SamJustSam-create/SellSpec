@@ -54,7 +54,7 @@ Release artifacts are produced by `build\publish.ps1` into `artifacts\`:
 
 Measured sizes for the current build are listed in [TESTING.md](TESTING.md#performance-measurements). Checksums are in `artifacts\SHA256SUMS.txt`.
 
-The binaries are **not code-signed** yet. Windows SmartScreen may warn on first launch. See [DEVELOPMENT.md](DEVELOPMENT.md#code-signing) for the signing procedure.
+Release executables are to be code-signed by SignPath Foundation once the project is approved (see [Code signing policy](#code-signing-policy)). Until then Windows SmartScreen may warn on first launch, and each release's notes say whether its executables are signed.
 
 If the .NET Desktop Runtime 10 is missing, the framework-dependent builds show Windows' standard "You must install or update .NET" dialog with a download link and exit; the self-contained build runs regardless. (Verified on the development machine, which has no machine-wide runtime.)
 
@@ -110,11 +110,16 @@ docs/                          hardware detection methods, decisions, manual tes
 - [DEVELOPMENT.md](DEVELOPMENT.md) – building, publishing, signing
 - [TESTING.md](TESTING.md) – automated tests, performance measurements, manual checklist
 - [SECURITY.md](SECURITY.md) and [PRIVACY.md](PRIVACY.md)
+- [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) – how releases are built, signed, approved and verified
 - [KNOWN_LIMITATIONS.md](KNOWN_LIMITATIONS.md) – what is partial, estimated or not implemented
 - [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), [CONTRIBUTING.md](CONTRIBUTING.md)
 - [docs/DECISIONS.md](docs/DECISIONS.md) – architectural decision records
 - [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)
 
+## Code signing policy
+
+Release executables are to be signed through SignPath Foundation's free programme for open-source projects. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) lists what is signed, how a release is built and approved, the team roles, and how to verify a signature. Releases up to and including 0.1.1-alpha are unsigned; the policy names the first signed release when it ships.
+
 ## Licence
 
-Copyright © 2026 SellSpec. All rights reserved. The licence for distribution has not been chosen yet; see [CONTRIBUTING.md](CONTRIBUTING.md).
+SellSpec is free software under the [MIT Licence](LICENSE). Copyright © 2026 SellSpec contributors. Third-party components and their licences are listed in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

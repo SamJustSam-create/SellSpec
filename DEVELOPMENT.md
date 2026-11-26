@@ -86,24 +86,76 @@ Both workflows pin every action to a full commit SHA (the version is in a traili
 
 4. Watch the *Release* workflow; when it finishes, review the generated release page and edit the notes if needed.
 
-If the tag and the version disagree, the tag is malformed, or the tagged commit is not on `main`, the workflow stops before building, so a mislabeled or unreviewed release cannot be published. The signing step is a commented placeholder in `release.yml` until a certificate exists (see below).
+If the tag and the version disagree, the tag is malformed, or the tagged commit is not on `main`, the workflow stops before building, so a mislabeled or unreviewed release cannot be published. The signing steps in `release.yml` run only when SignPath is configured for the repository (see below).
 
 ## Code signing
 
-The artifacts are **not signed**. To sign future releases:
+Release executables are signed by [SignPath Foundation](https://signpath.org) through its free programme for open-source projects; [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) is the public policy that programme requires. There is no certificate in this repository or on any maintainer's machine. Signing happens inside the release workflow, and SignPath signs only builds it can trace to a run of that workflow on this repository (origin verification).
 
-1. Obtain a code-signing certificate (an OV certificate works; an EV certificate gives immediate SmartScreen reputation). Store it in a hardware token or Azure Key Vault, never in the repository.
-2. Sign each executable after publishing, with timestamping so signatures outlive the certificate:
+How the workflow signs:
 
-   ```powershell
-   signtool sign /fd SHA256 /tr http://timestamp.digicert.com /td SHA256 /a artifacts\SellSpec-*.exe
-   ```
+1. `build/publish.ps1` produces the artifacts as usual.
+2. `build/signing.ps1 -Stage` copies the executables into `signing/unsigned` under fixed names (`SellSpec-singlefile.exe`, `SellSpec-selfcontained.exe`, `portable\SellSpec.exe`), and the workflow uploads that folder as a GitHub Actions artifact.
+3. `signpath/github-action-submit-signing-request` submits the artifact. The signing policy requires manual approval, so the step waits (up to an hour) for an approver to approve the request in SignPath.
+4. `build/signing.ps1 -Apply` verifies that every staged file came back with a valid, timestamped signature whose certificate subject contains "SignPath Foundation", copies the signed files over the unsigned ones, rebuilds the portable zip and regenerates `SHA256SUMS.txt`.
+5. The release notes state that the executables are signed and carry the SignPath attribution.
 
-   (`signtool` ships with the Windows SDK. For Key Vault use `AzureSignTool`.)
-3. Also sign `SellSpec.exe` inside the portable folder before zipping (run `signtool` on `artifacts\SellSpec-<version>-win-x64-portable\SellSpec.exe` and re-zip), then regenerate `SHA256SUMS.txt`.
-4. Verify with `signtool verify /pa /v <file>`.
+The steps run only when the repository variable `SIGNPATH_ORGANIZATION_ID` is set. Without it (so also before SignPath Foundation has approved the project) the release is published unsigned and its notes say so. With it set, any signing failure fails the run: a half-signed or accidentally unsigned release cannot be published.
 
-Add the signing step to `build\publish.ps1` behind a parameter once a certificate exists; do not commit certificate files or passwords.
+Repository configuration (Settings → Secrets and variables → Actions):
+
+| Kind | Name | Value |
+|---|---|---|
+| Variable | `SIGNPATH_ORGANIZATION_ID` | Organization id shown on the SignPath organisation page |
+| Variable | `SIGNPATH_PROJECT_SLUG` | Project slug, e.g. `SellSpec` |
+| Variable | `SIGNPATH_SIGNING_POLICY_SLUG` | Signing policy slug, e.g. `release-signing` |
+| Secret | `SIGNPATH_API_TOKEN` | API token of a SignPath user with the Submitter role |
+
+SignPath project settings the workflow relies on:
+
+- Repository URL `https://github.com/SamJustSam-create/SellSpec`; trusted build system "GitHub.com"; origin verification on; GitHub-hosted runners required (an open-source programme rule). Install the SignPath GitHub App on the repository if SignPath asks for it.
+- Allowed branch names: releases are built from tags, so allow `v*` as well as `main`. If a request is rejected on the branch check, read the branch SignPath recorded on the request and adjust the pattern.
+- Artifact configuration (the uploaded artifact is a zip of the staging folder):
+
+  ```xml
+  <?xml version="1.0" encoding="utf-8"?>
+  <artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+    <zip-file>
+      <pe-file path="SellSpec-singlefile.exe">
+        <authenticode-sign/>
+      </pe-file>
+      <pe-file path="SellSpec-selfcontained.exe">
+        <authenticode-sign/>
+      </pe-file>
+      <directory path="portable">
+        <pe-file path="SellSpec.exe">
+          <authenticode-sign/>
+        </pe-file>
+      </directory>
+    </zip-file>
+  </artifact-configuration>
+  ```
+
+- A signing policy for releases with the approval process enabled; the approvers are the people listed in CODE_SIGNING_POLICY.md. The product name in every executable is `SellSpec` (`Directory.Build.props`), which SignPath may require the configuration to enforce.
+
+Verifying a release on any Windows PC:
+
+```powershell
+Get-AuthenticodeSignature .\SellSpec-<version>-win-x64-singlefile.exe | Format-List Status, TimeStamperCertificate, SignerCertificate
+```
+
+`Status` must be `Valid` and the signer's subject must name SignPath Foundation. `signtool verify /pa /v <file>` (Windows SDK) gives the same answer. The zip and `SHA256SUMS.txt` cannot carry an Authenticode signature; the checksums cover them.
+
+Dry run of the packaging steps without SignPath (this does not produce a signed build):
+
+```powershell
+./build/publish.ps1 -SkipTests -SkipSelfContained
+./build/signing.ps1 -Stage -StagingDirectory signing\unsigned
+Copy-Item -Recurse signing\unsigned signing\signed
+./build/signing.ps1 -Apply -SignedDirectory signing\signed -SkipSignatureCheck
+```
+
+Never commit certificates or tokens, never describe a release as signed when the signing step did not run, and never pass `-SkipSignatureCheck` in the workflow.
 
 ## Coding conventions
 

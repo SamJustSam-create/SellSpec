@@ -13,6 +13,15 @@ name: Release
 #   - the release is created as a draft and published only after every asset uploaded;
 #   - runs for the same tag are serialised so two runs cannot interleave their uploads;
 #   - every action is pinned to a full commit SHA (Dependabot proposes updates).
+#
+# Code signing (CODE_SIGNING_POLICY.md; DEVELOPMENT.md, "Code signing"): when the repository variable
+# SIGNPATH_ORGANIZATION_ID is set, the executables are signed by SignPath Foundation. The unsigned executables
+# are uploaded as a workflow artifact, SignPath verifies that this workflow run built them (origin
+# verification), an approver approves the request by hand, and the signed copies replace the unsigned ones
+# before the zip and checksums are rebuilt. Signing fails closed: any signing error fails the run, so an
+# unsigned release can only be produced when signing is not configured, and its notes then say so. The
+# SignPath API token is exposed to that one step only; the build job holds `actions: read` so SignPath can
+# fetch the artifact with the workflow token.
 
 on:
   push:
@@ -32,13 +41,16 @@ env:
 
 jobs:
   build:
-    name: Verify, build, test and publish
+    name: Verify, build, test, publish and sign
     runs-on: windows-latest
-    timeout-minutes: 45
+    # Generous because release signing waits for a human approval in SignPath (up to an hour).
+    timeout-minutes: 90
     permissions:
       contents: read
+      actions: read
     outputs:
       version: ${{ steps.version.outputs.version }}
+      signed: ${{ steps.apply-signed.outcome == 'success' }}
 
     steps:
       - name: Check out
@@ -116,14 +128,42 @@ jobs:
         shell: pwsh
         run: ./build/publish.ps1 -SkipTests
 
-      # ---------------------------------------------------------------------------------------------
-      # Code signing goes here once a certificate exists (see DEVELOPMENT.md, "Code signing").
-      # For Azure Trusted Signing, add the azure/trusted-signing-action step (pinned to a commit SHA)
-      # with the endpoint, account and certificate profile stored as repository secrets, sign
-      # artifacts/*.exe and the SellSpec.exe inside the portable folder, re-create the zip, then re-run
-      # build/checksums.ps1. Never commit certificates or passwords; never claim artifacts are signed
-      # when this step is absent.
-      # ---------------------------------------------------------------------------------------------
+      # ---- Code signing by SignPath Foundation (runs only when the repository is configured for it) ----
+      - name: Stage the executables for signing
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        shell: pwsh
+        run: ./build/signing.ps1 -Stage -ArtifactsDirectory artifacts -StagingDirectory signing/unsigned
+
+      - name: Upload the unsigned executables for SignPath
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        id: upload-unsigned
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: SellSpec-${{ steps.version.outputs.version }}-unsigned
+          path: signing/unsigned
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Submit the signing request to SignPath and wait for approval
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        uses: signpath/github-action-submit-signing-request@a2c5b60d9c75f073142b653c354b632eedce097b # v3.2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          github-artifact-id: ${{ steps.upload-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          # Release signing requires a manual approval in SignPath; allow up to an hour for it.
+          wait-for-completion-timeout-in-seconds: 3600
+          output-artifact-directory: signing/signed
+
+      - name: Verify the signatures and replace the executables
+        if: vars.SIGNPATH_ORGANIZATION_ID != ''
+        id: apply-signed
+        shell: pwsh
+        run: ./build/signing.ps1 -Apply -ArtifactsDirectory artifacts -SignedDirectory signing/signed
+      # ------------------------------------------------------------------------------------------------
 
       - name: Upload artifacts to the workflow run
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -171,7 +211,9 @@ jobs:
             | `SellSpec-${{ needs.build.outputs.version }}-win-x64-singlefile.exe` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) |
             | `SellSpec-${{ needs.build.outputs.version }}-win-x64-portable.zip` | .NET Desktop Runtime 10; keeps settings beside the exe |
 
-            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`). The binaries are not code-signed; Windows SmartScreen may warn on first launch.
+            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`).
+
+            ${{ needs.build.outputs.signed == 'true' && 'The executables are code-signed by SignPath Foundation. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).' || 'The executables are not code-signed, so Windows SmartScreen may warn on first launch.' }} See the [Code signing policy](https://github.com/SamJustSam-create/SellSpec/blob/main/CODE_SIGNING_POLICY.md).
           files: |
             artifacts/*.zip
             artifacts/*.exe

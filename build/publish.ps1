@@ -85,4 +85,4 @@ if (-not $SkipSelfContained) {
 
 Write-Host '==> Artifacts' -ForegroundColor Cyan
 Get-ChildItem $artifacts -File | ForEach-Object { '{0,12:N0} KB  {1}' -f ($_.Length / 1KB), $_.Name }
-Write-Host 'Note: binaries are NOT code-signed. See DEVELOPMENT.md for signing instructions.' -ForegroundColor Yellow
+Write-Host 'Note: this script does not sign binaries. The release workflow signs them through SignPath (see DEVELOPMENT.md, "Code signing").' -ForegroundColor Yellow
