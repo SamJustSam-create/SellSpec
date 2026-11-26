@@ -18,7 +18,7 @@ body:
     id: sellspec-version
     attributes:
       label: SellSpec version
-      placeholder: "0.1.1-alpha"
+      placeholder: "0.1.2-alpha (shown on the About page)"
     validations:
       required: true
   - type: input

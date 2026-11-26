@@ -15,7 +15,7 @@ It is built for people selling a laptop or desktop on Facebook Marketplace, eBay
 |---|---|
 | Platform | Windows 10 / 11, 64-bit |
 | Stack | C# 14, .NET 10 (LTS), WPF, MVVM |
-| Status | **0.1.1-alpha** – functional MVP; alpha pre-releases on GitHub |
+| Status | **0.1.2-alpha** – functional MVP; alpha pre-releases on GitHub |
 | Network | None. No accounts, no telemetry, nothing leaves the device |
 | Privileges | Standard user. Elevation is never required |
 
