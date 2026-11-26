@@ -2,6 +2,12 @@ name: Release
 
 # Pushing a tag such as v0.2.0-alpha or v1.0.0 builds, tests and publishes SellSpec, then creates a GitHub
 # release with the artifacts and SHA256SUMS.txt attached. Tags containing a hyphen are marked pre-release.
+#
+# Safety rules enforced below:
+#   - the tag must have the form v<major>.<minor>.<patch>[-<suffix>] and equal the version in Directory.Build.props;
+#   - the tagged commit must already be on main (no releases from unreviewed branches);
+#   - the tag name is never interpolated into shell or PowerShell source;
+#   - every action is pinned to a full commit SHA (Dependabot proposes updates).
 
 on:
   push:
@@ -23,35 +29,63 @@ jobs:
 
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Require the tagged commit to be on main
+        shell: pwsh
+        run: |
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor HEAD origin/main
+          if ($LASTEXITCODE -ne 0) {
+            Write-Error "The tagged commit is not on main. Merge it through a pull request first, then tag the merged commit."
+            exit 1
+          }
+
+      - name: Check that the tag matches the version in Directory.Build.props
+        id: version
+        shell: pwsh
+        env:
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          $tag = $env:TAG_NAME
+          if ($tag -notmatch '^v(?<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.]*)?)$') {
+            Write-Error "Tag '$tag' does not match the required format v<major>.<minor>.<patch>[-<suffix>]."
+            exit 1
+          }
+          $tagVersion = $Matches.version
+
+          $props = [xml](Get-Content Directory.Build.props -Raw)
+          $prefixNode = $props.SelectSingleNode('/Project/PropertyGroup/VersionPrefix')
+          $suffixNode = $props.SelectSingleNode('/Project/PropertyGroup/VersionSuffix')
+          $prefix = if ($prefixNode) { $prefixNode.InnerText.Trim() } else { '' }
+          $suffix = if ($suffixNode) { $suffixNode.InnerText.Trim() } else { '' }
+          if (-not $prefix) {
+            Write-Error 'VersionPrefix is missing from Directory.Build.props.'
+            exit 1
+          }
+          $version = if ($suffix) { "$prefix-$suffix" } else { $prefix }
+
+          if ($tagVersion -ne $version) {
+            Write-Error "Tag '$tag' does not match the project version '$version'. Update Directory.Build.props (and CHANGELOG.md) before tagging."
+            exit 1
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Set up .NET 10 SDK
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4.3.1
         with:
           dotnet-version: 10.0.x
 
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~\.nuget\packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props', 'global.json') }}
           restore-keys: |
             nuget-${{ runner.os }}-
-
-      - name: Check that the tag matches the version in Directory.Build.props
-        shell: pwsh
-        run: |
-          $props = [xml](Get-Content Directory.Build.props)
-          $prefix = $props.Project.PropertyGroup.VersionPrefix | Where-Object { $_ } | Select-Object -First 1
-          $suffix = $props.Project.PropertyGroup.VersionSuffix | Where-Object { $_ } | Select-Object -First 1
-          $version = if ($suffix) { "$prefix-$suffix" } else { $prefix }
-          $tag = '${{ github.ref_name }}'.TrimStart('v')
-          if ($tag -ne $version) {
-            Write-Error "Tag '${{ github.ref_name }}' does not match the project version '$version'. Update Directory.Build.props (and CHANGELOG.md) before tagging."
-            exit 1
-          }
-          "version=$version" >> $env:GITHUB_OUTPUT
-        id: version
 
       - name: Restore
         run: dotnet restore SellSpec.slnx
@@ -60,7 +94,7 @@ jobs:
         run: dotnet build SellSpec.slnx -c Release --no-restore
 
       - name: Test
-        run: dotnet test SellSpec.slnx -c Release --no-build --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+        run: dotnet test SellSpec.slnx -c Release --no-build --logger trx --results-directory TestResults
 
       - name: Publish artifacts
         shell: pwsh
@@ -68,14 +102,15 @@ jobs:
 
       # ---------------------------------------------------------------------------------------------
       # Code signing goes here once a certificate exists (see DEVELOPMENT.md, "Code signing").
-      # For Azure Trusted Signing, add the azure/trusted-signing-action step with the endpoint, account
-      # and certificate profile stored as repository secrets, sign artifacts/*.exe and the SellSpec.exe
-      # inside the portable folder, re-create the zip, then re-run build/checksums.ps1.
-      # Never commit certificates or passwords; never claim artifacts are signed when this step is absent.
+      # For Azure Trusted Signing, add the azure/trusted-signing-action step (pinned to a commit SHA)
+      # with the endpoint, account and certificate profile stored as repository secrets, sign
+      # artifacts/*.exe and the SellSpec.exe inside the portable folder, re-create the zip, then re-run
+      # build/checksums.ps1. Never commit certificates or passwords; never claim artifacts are signed
+      # when this step is absent.
       # ---------------------------------------------------------------------------------------------
 
       - name: Upload artifacts to the workflow run
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: SellSpec-${{ steps.version.outputs.version }}-win-x64
           path: |
@@ -85,7 +120,7 @@ jobs:
           retention-days: 30
 
       - name: Create GitHub release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           name: SellSpec ${{ steps.version.outputs.version }}
           prerelease: ${{ contains(github.ref_name, '-') }}

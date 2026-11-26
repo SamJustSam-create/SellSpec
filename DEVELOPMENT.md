@@ -69,7 +69,9 @@ Two GitHub Actions workflows live in `.github/workflows/`:
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `ci.yml` | every push and pull request to `main`, or manually | restores, builds in Release and runs the whole test suite on `windows-latest`; uploads the `.trx` results as an artifact. The real-hardware integration tests run against the GitHub runner VM |
-| `release.yml` | a pushed tag matching `v*` | checks that the tag equals the version in `Directory.Build.props`, builds and tests, runs `build\publish.ps1 -SkipTests`, uploads the artifacts to the run, and creates a GitHub release with the zip, both executables and `SHA256SUMS.txt` attached. Tags containing a hyphen (`v0.2.0-alpha`) become pre-releases |
+| `release.yml` | a pushed tag matching `v*` | requires the tagged commit to be on `main`, checks that the tag has the form `v<major>.<minor>.<patch>[-<suffix>]` and equals the version in `Directory.Build.props`, builds and tests, runs `build\publish.ps1 -SkipTests`, uploads the artifacts to the run, and creates a GitHub release with the zip, both executables and `SHA256SUMS.txt` attached. Tags containing a hyphen (`v0.2.0-alpha`) become pre-releases |
+
+Both workflows pin every action to a full commit SHA (the version is in a trailing comment) and `.github/dependabot.yml` proposes monthly updates for actions and NuGet packages. The tag name is passed to scripts through an environment variable, never interpolated into script source.
 
 ### Cutting a release
 
@@ -84,7 +86,7 @@ Two GitHub Actions workflows live in `.github/workflows/`:
 
 4. Watch the *Release* workflow; when it finishes, review the generated release page and edit the notes if needed.
 
-If the tag and the version disagree the workflow stops before building, so a mislabeled release cannot be published. The signing step is a commented placeholder in `release.yml` until a certificate exists (see below).
+If the tag and the version disagree, the tag is malformed, or the tagged commit is not on `main`, the workflow stops before building, so a mislabeled or unreviewed release cannot be published. The signing step is a commented placeholder in `release.yml` until a certificate exists (see below).
 
 ## Code signing
 
