@@ -1,0 +1,38 @@
+<UserControl x:Class="SellSpec.App.Views.PrivacyChecklistView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SellSpec.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=vm:PrivacyChecklistViewModel}">
+  <ScrollViewer>
+    <StackPanel Margin="{StaticResource PagePadding}" MaxWidth="900" HorizontalAlignment="Left">
+      <TextBlock Text="Pre-sale Checklist" Style="{StaticResource PageTitle}" />
+      <TextBlock Text="Steps to consider before handing the computer to a buyer. This list is information only: SellSpec never deletes files, resets Windows or changes any setting for you." Style="{StaticResource PageSubtitle}" />
+      <TextBlock Style="{StaticResource CaptionText}" Margin="0,0,0,12">
+        <Run Text="{Binding DoneCount, Mode=OneWay}" /><Run Text=" of " /><Run Text="{Binding TotalCount, Mode=OneWay}" /><Run Text=" ticked (this session only)" />
+      </TextBlock>
+      <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type vm:ChecklistItemViewModel}">
+            <Border Style="{StaticResource Card}" Margin="0,0,0,10">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <CheckBox IsChecked="{Binding IsDone}" VerticalAlignment="Top" Margin="0,2,12,0" AutomationProperties.Name="{Binding Title}" />
+                <StackPanel Grid.Column="1">
+                  <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                  <TextBlock Text="{Binding Description}" Style="{StaticResource SecondaryText}" Margin="0,4,0,0" />
+                </StackPanel>
+                <Button Grid.Column="2" Content="{Binding SettingsLabel}" Command="{Binding OpenSettingsCommand}" VerticalAlignment="Top" Margin="12,0,0,0" Visibility="{Binding HasSettingsLink, Converter={StaticResource BoolToVisibility}}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

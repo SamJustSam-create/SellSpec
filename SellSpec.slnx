@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/SellSpec.Core/SellSpec.Core.csproj" />
+    <Project Path="src/SellSpec.Windows/SellSpec.Windows.csproj" />
+    <Project Path="src/SellSpec.App/SellSpec.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/SellSpec.Core.Tests/SellSpec.Core.Tests.csproj" />
+    <Project Path="tests/SellSpec.Windows.Tests/SellSpec.Windows.Tests.csproj" />
+  </Folder>
+  <Folder Name="/solution items/">
+    <File Path="README.md" />
+    <File Path="Directory.Build.props" />
+    <File Path=".editorconfig" />
+  </Folder>
+</Solution>

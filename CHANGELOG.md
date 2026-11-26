@@ -1,0 +1,26 @@
+# Changelog
+
+All notable changes to SellSpec are recorded here. The format follows Keep a Changelog; versions follow SemVer.
+
+## [0.1.0-alpha] – 2026-11-25
+
+First functional MVP.
+
+### Added
+- Hardware detection engine (`SellSpec.Core` + `SellSpec.Windows`): device identity with custom-build and virtual-machine detection, processor, memory, storage (internal/external/removable/virtual classification, reported health, SMART and reliability counters), graphics (integrated/dedicated, registry-based VRAM), displays (EDID, native mode, size estimate, touch), battery (design/full-charge capacity, health %, cycles, status), connectivity (Wi-Fi generation via WLAN API, Bluetooth, Ethernet, webcam, audio, fingerprint), Windows (edition, version, activation and licence channel, TPM via TBS, Secure Boot, Windows 11 readiness).
+- Provenance labelling for every value; concurrent scanner with per-component isolation, timeouts, cancellation and progress.
+- WPF application with Windows 11-style light and dark themes, nine pages, compact navigation on narrow windows, keyboard navigation and automation names.
+- Device health dashboard with text-labelled status indicators and an optional administrator rescan.
+- Guided hardware tests: keyboard, full-screen display colours, speaker tone, microphone level meter, Windows Camera launch, connectivity confirmations.
+- Physical condition questionnaire; every question skippable.
+- Marketplace listing generator for Facebook Marketplace, eBay, Gumtree and general use with configurable title limits, editing, copy and text export.
+- Report export to PNG, PDF (in-house writer), plain text and JSON with preview and disclaimer.
+- Pre-sale privacy checklist with links to Windows Settings pages.
+- Redaction guard on all exports and sanitised diagnostic logging.
+- Portable mode, settings persistence, `--demo` and `--capture` developer switches.
+- 287 automated tests including ten device scenarios and real-hardware integration tests.
+- Publish scripts for portable, single-file and self-contained builds with SHA-256 checksums; icon generator.
+- Documentation set.
+
+### Known gaps
+See KNOWN_LIMITATIONS.md. Not yet verified on a physical laptop; binaries unsigned.

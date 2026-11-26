@@ -1,0 +1,27 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Deterministic>true</Deterministic>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <NeutralLanguage>en-AU</NeutralLanguage>
+    <InvariantGlobalization>false</InvariantGlobalization>
+    <AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+  </PropertyGroup>
+
+  <!-- Product identity and version. Bump VersionPrefix for each release. -->
+  <PropertyGroup>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionSuffix>alpha</VersionSuffix>
+    <Product>SellSpec</Product>
+    <Company>SellSpec</Company>
+    <Authors>SellSpec</Authors>
+    <Copyright>Copyright © 2026 SellSpec. All rights reserved.</Copyright>
+    <Description>Scan it. List it. Sell it. Device specification scanner and marketplace listing generator.</Description>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+</Project>

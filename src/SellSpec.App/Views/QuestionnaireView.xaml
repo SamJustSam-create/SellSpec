@@ -1,0 +1,99 @@
+<UserControl x:Class="SellSpec.App.Views.QuestionnaireView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SellSpec.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=vm:QuestionnaireViewModel}">
+  <UserControl.Resources>
+    <Style x:Key="QuestionLabel" TargetType="TextBlock" BasedOn="{StaticResource BodyStrongText}">
+      <Setter Property="Margin" Value="0,14,0,6" />
+    </Style>
+  </UserControl.Resources>
+  <StackPanel>
+    <TextBlock Text="Overall condition" Style="{StaticResource QuestionLabel}" Margin="0,0,0,6" />
+    <WrapPanel>
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="grade" Content="Like New" IsChecked="{Binding OverallCondition, Converter={StaticResource EnumToBool}, ConverterParameter=LikeNew}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="grade" Content="Excellent" IsChecked="{Binding OverallCondition, Converter={StaticResource EnumToBool}, ConverterParameter=Excellent}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="grade" Content="Good" IsChecked="{Binding OverallCondition, Converter={StaticResource EnumToBool}, ConverterParameter=Good}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="grade" Content="Fair" IsChecked="{Binding OverallCondition, Converter={StaticResource EnumToBool}, ConverterParameter=Fair}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="grade" Content="Poor" IsChecked="{Binding OverallCondition, Converter={StaticResource EnumToBool}, ConverterParameter=Poor}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="grade" Content="For parts / not working" IsChecked="{Binding OverallCondition, Converter={StaticResource EnumToBool}, ConverterParameter=ForPartsOrNotWorking}" />
+    </WrapPanel>
+
+    <TextBlock Text="Scratches or cosmetic damage?" Style="{StaticResource QuestionLabel}" />
+    <WrapPanel>
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="cosmetic" Content="Yes" IsChecked="{Binding HasCosmeticDamage, Converter={StaticResource EnumToBool}, ConverterParameter=Yes}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="cosmetic" Content="No" IsChecked="{Binding HasCosmeticDamage, Converter={StaticResource EnumToBool}, ConverterParameter=No}" />
+    </WrapPanel>
+    <TextBox Text="{Binding CosmeticDamageNotes, UpdateSourceTrigger=PropertyChanged}" ToolTip="Describe the wear, e.g. 'light scuff on the lid'" AutomationProperties.Name="Cosmetic damage notes"
+             Visibility="{Binding HasCosmeticDamage, Converter={StaticResource EnumToVisibility}, ConverterParameter=Yes}" />
+
+    <TextBlock Text="Screen condition" Style="{StaticResource QuestionLabel}" />
+    <WrapPanel>
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="screen" Content="No issues" IsChecked="{Binding Screen, Converter={StaticResource EnumToBool}, ConverterParameter=NoIssues}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="screen" Content="Minor wear" IsChecked="{Binding Screen, Converter={StaticResource EnumToBool}, ConverterParameter=MinorWear}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="screen" Content="Damaged" IsChecked="{Binding Screen, Converter={StaticResource EnumToBool}, ConverterParameter=Damaged}" />
+    </WrapPanel>
+
+    <StackPanel Visibility="{Binding ShowPortableQuestions, Converter={StaticResource BoolToVisibility}}">
+      <TextBlock Text="Keyboard condition" Style="{StaticResource QuestionLabel}" />
+      <WrapPanel>
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="keyboard" Content="No issues" IsChecked="{Binding Keyboard, Converter={StaticResource EnumToBool}, ConverterParameter=NoIssues}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="keyboard" Content="Minor wear" IsChecked="{Binding Keyboard, Converter={StaticResource EnumToBool}, ConverterParameter=MinorWear}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="keyboard" Content="Damaged" IsChecked="{Binding Keyboard, Converter={StaticResource EnumToBool}, ConverterParameter=Damaged}" />
+      </WrapPanel>
+      <TextBlock Text="Trackpad condition" Style="{StaticResource QuestionLabel}" />
+      <WrapPanel>
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="trackpad" Content="No issues" IsChecked="{Binding Trackpad, Converter={StaticResource EnumToBool}, ConverterParameter=NoIssues}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="trackpad" Content="Minor wear" IsChecked="{Binding Trackpad, Converter={StaticResource EnumToBool}, ConverterParameter=MinorWear}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="trackpad" Content="Damaged" IsChecked="{Binding Trackpad, Converter={StaticResource EnumToBool}, ConverterParameter=Damaged}" />
+      </WrapPanel>
+      <TextBlock Text="Hinge condition" Style="{StaticResource QuestionLabel}" />
+      <WrapPanel>
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="hinge" Content="No issues" IsChecked="{Binding Hinge, Converter={StaticResource EnumToBool}, ConverterParameter=NoIssues}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="hinge" Content="Minor wear" IsChecked="{Binding Hinge, Converter={StaticResource EnumToBool}, ConverterParameter=MinorWear}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="hinge" Content="Damaged" IsChecked="{Binding Hinge, Converter={StaticResource EnumToBool}, ConverterParameter=Damaged}" />
+      </WrapPanel>
+      <TextBlock Text="Any battery concerns?" Style="{StaticResource QuestionLabel}" />
+      <WrapPanel>
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="battery" Content="Yes" IsChecked="{Binding HasBatteryConcern, Converter={StaticResource EnumToBool}, ConverterParameter=Yes}" />
+        <RadioButton Style="{StaticResource ChoiceChip}" GroupName="battery" Content="No" IsChecked="{Binding HasBatteryConcern, Converter={StaticResource EnumToBool}, ConverterParameter=No}" />
+      </WrapPanel>
+      <TextBox Text="{Binding BatteryNotes, UpdateSourceTrigger=PropertyChanged}" ToolTip="e.g. 'drains quickly', 'swollen', 'replaced in 2025'" AutomationProperties.Name="Battery notes"
+               Visibility="{Binding HasBatteryConcern, Converter={StaticResource EnumToVisibility}, ConverterParameter=Yes}" />
+    </StackPanel>
+
+    <TextBlock Text="Charger included?" Style="{StaticResource QuestionLabel}" />
+    <WrapPanel>
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="charger" Content="Yes" IsChecked="{Binding ChargerIncluded, Converter={StaticResource EnumToBool}, ConverterParameter=Yes}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="charger" Content="No" IsChecked="{Binding ChargerIncluded, Converter={StaticResource EnumToBool}, ConverterParameter=No}" />
+    </WrapPanel>
+
+    <TextBlock Text="Original packaging included?" Style="{StaticResource QuestionLabel}" />
+    <WrapPanel>
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="box" Content="Yes" IsChecked="{Binding OriginalPackagingIncluded, Converter={StaticResource EnumToBool}, ConverterParameter=Yes}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="box" Content="No" IsChecked="{Binding OriginalPackagingIncluded, Converter={StaticResource EnumToBool}, ConverterParameter=No}" />
+    </WrapPanel>
+
+    <TextBlock Text="Known defects?" Style="{StaticResource QuestionLabel}" />
+    <WrapPanel>
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="defects" Content="Yes" IsChecked="{Binding HasKnownDefects, Converter={StaticResource EnumToBool}, ConverterParameter=Yes}" />
+      <RadioButton Style="{StaticResource ChoiceChip}" GroupName="defects" Content="No" IsChecked="{Binding HasKnownDefects, Converter={StaticResource EnumToBool}, ConverterParameter=No}" />
+    </WrapPanel>
+    <TextBox Text="{Binding KnownDefects, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MultilineTextBox}" MinHeight="56" ToolTip="Describe every fault a buyer should know about" AutomationProperties.Name="Known defects"
+             Visibility="{Binding HasKnownDefects, Converter={StaticResource EnumToVisibility}, ConverterParameter=Yes}" />
+
+    <TextBlock Text="Repair or upgrade history (optional)" Style="{StaticResource QuestionLabel}" />
+    <TextBox Text="{Binding RepairOrUpgradeHistory, UpdateSourceTrigger=PropertyChanged}" ToolTip="e.g. 'SSD upgraded to 1 TB in 2024'" AutomationProperties.Name="Repair or upgrade history" />
+
+    <TextBlock Text="Additional accessories (optional)" Style="{StaticResource QuestionLabel}" />
+    <TextBox Text="{Binding AdditionalAccessories, UpdateSourceTrigger=PropertyChanged}" ToolTip="Comma-separated, e.g. 'laptop sleeve, USB-C hub'" AutomationProperties.Name="Additional accessories" />
+
+    <TextBlock Text="Additional notes for buyers (optional)" Style="{StaticResource QuestionLabel}" />
+    <TextBox Text="{Binding SellerNotes, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MultilineTextBox}" MinHeight="56" AutomationProperties.Name="Seller notes" />
+
+    <TextBlock Text="Asking price (optional)" Style="{StaticResource QuestionLabel}" />
+    <TextBox Text="{Binding AskingPriceText, UpdateSourceTrigger=PropertyChanged}" Width="160" HorizontalAlignment="Left" ToolTip="Numbers only, e.g. 650" AutomationProperties.Name="Asking price" />
+  </StackPanel>
+</UserControl>

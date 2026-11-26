@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>SellSpec.Core</RootNamespace>
+    <AssemblyName>SellSpec.Core</AssemblyName>
+    <IsTrimmable>true</IsTrimmable>
+  </PropertyGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="SellSpec.Core.Tests" />
+  </ItemGroup>
+</Project>

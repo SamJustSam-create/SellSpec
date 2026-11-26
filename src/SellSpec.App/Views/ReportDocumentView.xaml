@@ -1,0 +1,150 @@
+<UserControl x:Class="SellSpec.App.Views.ReportDocumentView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:reports="clr-namespace:SellSpec.Core.Reports;assembly=SellSpec.Core"
+             xmlns:conv="clr-namespace:SellSpec.App.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=reports:DeviceReport}"
+             Width="880" Background="#FFFFFF" FontFamily="Segoe UI" TextOptions.TextFormattingMode="Ideal" UseLayoutRounding="True">
+  <!-- The report is intentionally theme-independent: fixed neutral colours so PNG exports look the same everywhere. -->
+  <UserControl.Resources>
+    <conv:HealthStatusToBrushConverter x:Key="RStatusBrush" />
+    <SolidColorBrush x:Key="RInk" Color="#1B1B1B" />
+    <SolidColorBrush x:Key="RMuted" Color="#5C5C5C" />
+    <SolidColorBrush x:Key="RFaint" Color="#8A8A8A" />
+    <SolidColorBrush x:Key="RRule" Color="#E1E1E1" />
+    <SolidColorBrush x:Key="RAccent" Color="#0F6CBD" />
+    <SolidColorBrush x:Key="RBand" Color="#1F2A37" />
+    <SolidColorBrush x:Key="RGood" Color="#0F7B0F" />
+    <SolidColorBrush x:Key="RAttention" Color="#B5650A" />
+    <SolidColorBrush x:Key="RIssue" Color="#C42B1C" />
+    <SolidColorBrush x:Key="RGrey" Color="#8A8A8A" />
+    <SolidColorBrush x:Key="RNotice" Color="#FFF4CE" />
+    <Style TargetType="TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource RInk}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style x:Key="RSection" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+      <Setter Property="Foreground" Value="{StaticResource RAccent}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="Margin" Value="0,22,0,4" />
+    </Style>
+    <DataTemplate x:Key="FieldTemplate" DataType="{x:Type reports:ReportField}">
+      <Grid Margin="0,0,0,6">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="190" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label}" Foreground="{StaticResource RMuted}" FontSize="12" />
+        <StackPanel Grid.Column="1">
+          <TextBlock>
+            <Run Text="{Binding Value, Mode=OneWay}" />
+            <Run Text="{Binding ProvenanceTag, Mode=OneWay, StringFormat=' ({0})', TargetNullValue=''}" Foreground="{StaticResource RFaint}" FontStyle="Italic" FontSize="11" />
+          </TextBlock>
+          <TextBlock Text="{Binding Note}" Foreground="{StaticResource RFaint}" FontSize="11" FontStyle="Italic" Visibility="{Binding Note, Converter={x:Static conv:Statics.StringToVisibility}}" />
+        </StackPanel>
+      </Grid>
+    </DataTemplate>
+    <DataTemplate x:Key="StatusRowTemplate" DataType="{x:Type reports:ReportStatusRow}">
+      <Grid Margin="0,0,0,7">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="190" />
+          <ColumnDefinition Width="110" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal">
+          <Ellipse Width="9" Height="9" Margin="0,4,8,0" VerticalAlignment="Top" Fill="{Binding Status, Converter={StaticResource RStatusBrush}}" />
+          <TextBlock Text="{Binding Title}" FontSize="12" />
+        </StackPanel>
+        <TextBlock Grid.Column="1" Text="{Binding StatusLabel}" FontWeight="Bold" FontSize="12" Foreground="{Binding Status, Converter={StaticResource RStatusBrush}}" />
+        <StackPanel Grid.Column="2">
+          <TextBlock Text="{Binding Value}" />
+          <TextBlock Text="{Binding Detail}" Foreground="{StaticResource RFaint}" FontSize="11" FontStyle="Italic" Visibility="{Binding Detail, Converter={x:Static conv:Statics.StringToVisibility}}" />
+        </StackPanel>
+      </Grid>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <StackPanel>
+    <!-- Band -->
+    <Border Background="{StaticResource RBand}" Padding="40,18">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+          <TextBlock Text="SellSpec" Foreground="White" FontSize="22" FontWeight="Bold" />
+          <TextBlock Text="Device specification report" Foreground="#C9D3E0" FontSize="12" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+          <TextBlock Text="{Binding ScannedAt, StringFormat='Scanned {0:d MMMM yyyy}'}" Foreground="White" FontSize="12" TextAlignment="Right" />
+          <TextBlock Text="{Binding ApplicationVersion, StringFormat='SellSpec {0}'}" Foreground="#C9D3E0" FontSize="11" TextAlignment="Right" />
+        </StackPanel>
+      </Grid>
+    </Border>
+    <Border Height="3" Background="{StaticResource RAccent}" />
+
+    <StackPanel Margin="40,22,40,28">
+      <TextBlock Text="{Binding DeviceName}" FontSize="22" FontWeight="Bold" />
+      <TextBlock Foreground="{StaticResource RMuted}" FontSize="13" Margin="0,2,0,0">
+        <Run Text="{Binding DeviceSecondaryName, Mode=OneWay}" /><Run Text="{Binding DeviceType, Mode=OneWay, StringFormat=' · {0}'}" /><Run Text="{Binding OperatingSystem, Mode=OneWay, StringFormat=' · {0}'}" />
+      </TextBlock>
+      <TextBlock Text="{Binding Headline}" FontSize="13" Margin="0,6,0,0" />
+
+      <ItemsControl ItemsSource="{Binding Notices}" Margin="0,12,0,0">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Background="{StaticResource RNotice}" BorderBrush="{StaticResource RAttention}" BorderThickness="3,0,0,0" Padding="12,8" Margin="0,0,0,8">
+              <TextBlock Text="{Binding}" FontSize="12" />
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <TextBlock Text="SPECIFICATIONS" Style="{StaticResource RSection}" />
+      <Border Height="1" Background="{StaticResource RRule}" Margin="0,0,0,10" />
+      <ItemsControl ItemsSource="{Binding Specifications}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type reports:ReportSection}">
+            <StackPanel Margin="0,0,0,10">
+              <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="13" Margin="0,6,0,6" />
+              <ItemsControl ItemsSource="{Binding Fields}" ItemTemplate="{StaticResource FieldTemplate}" />
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <TextBlock Text="DEVICE HEALTH" Style="{StaticResource RSection}" />
+      <Border Height="1" Background="{StaticResource RRule}" Margin="0,0,0,10" />
+      <ItemsControl ItemsSource="{Binding Health}" ItemTemplate="{StaticResource StatusRowTemplate}" />
+
+      <TextBlock Text="HARDWARE TESTS" Style="{StaticResource RSection}" />
+      <Border Height="1" Background="{StaticResource RRule}" Margin="0,0,0,10" />
+      <ItemsControl ItemsSource="{Binding HardwareTests}" ItemTemplate="{StaticResource StatusRowTemplate}" />
+
+      <TextBlock Text="SELLER-REPORTED CONDITION" Style="{StaticResource RSection}" />
+      <Border Height="1" Background="{StaticResource RRule}" Margin="0,0,0,10" />
+      <ItemsControl ItemsSource="{Binding SellerCondition}" ItemTemplate="{StaticResource FieldTemplate}" />
+
+      <StackPanel Visibility="{Binding KnownIssues.Count, Converter={x:Static conv:Statics.CountToVisibility}}">
+        <TextBlock Text="KNOWN ISSUES" Style="{StaticResource RSection}" />
+        <Border Height="1" Background="{StaticResource RRule}" Margin="0,0,0,10" />
+        <ItemsControl ItemsSource="{Binding KnownIssues}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Margin="0,0,0,4"><Run Text="•  " /><Run Text="{Binding Mode=OneWay}" /></TextBlock>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <Border Height="1" Background="{StaticResource RRule}" Margin="0,26,0,10" />
+      <TextBlock Text="{Binding Disclaimer}" Foreground="{StaticResource RFaint}" FontSize="10.5" />
+      <TextBlock Text="{Binding GeneratedAt, StringFormat='Generated {0:d MMM yyyy, h:mm tt} · SellSpec – Scan it. List it. Sell it.'}" Foreground="{StaticResource RFaint}" FontSize="10.5" Margin="0,6,0,0" />
+    </StackPanel>
+  </StackPanel>
+</UserControl>

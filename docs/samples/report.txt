@@ -1,0 +1,114 @@
+========================================================================
+SELLSPEC DEVICE REPORT
+========================================================================
+Custom-built desktop PC
+Gigabyte B550M K motherboard
+AMD Ryzen 5 5600 · 32 GB RAM · 4 TB NVMe SSD + 1 TB NVMe SSD
+Desktop PC · Windows 11 Pro
+Scanned 25 November 2026, 5:35 PM with SellSpec 0.1.0-alpha
+
+SYSTEM
+------------------------------------------------------------------------
+Type                               Custom-built PC (estimated)
+Motherboard                        Gigabyte B550M K (firmware reported)
+Form factor                        Desktop PC (firmware reported)
+Architecture                       x64
+BIOS/UEFI version                  F3 (Jun 2023) (firmware reported)
+
+PROCESSOR
+------------------------------------------------------------------------
+Processor                          AMD Ryzen 5 5600
+Cores / threads                    6 / 12
+Reported clock speed               3.5 GHz (firmware reported)
+
+MEMORY
+------------------------------------------------------------------------
+Installed memory                   32 GB (firmware reported)
+Usable memory                      31.9 GB
+Memory type                        DDR4 (firmware reported)
+Configured speed                   3200 MT/s (firmware reported)
+Modules                            8 GB DIMM + 8 GB DIMM + 8 GB DIMM + 8 GB DIMM (firmware reported)
+Memory slots (firmware)            4 reported (firmware reported)
+Upgradeable                        Not verified (estimated)
+
+STORAGE 1
+------------------------------------------------------------------------
+Drive                              Samsung SSD 970 EVO Plus 1TB
+Capacity                           1 TB
+Type                               NVMe SSD
+Reported health                    Healthy (reported)
+Power-on hours                     Not available
+
+STORAGE 2
+------------------------------------------------------------------------
+Drive                              KINGSTON SNV2S4000G
+Capacity                           4 TB
+Type                               NVMe SSD
+Role                               Windows system drive
+Reported health                    Healthy (reported)
+Power-on hours                     Not available
+
+GRAPHICS
+------------------------------------------------------------------------
+Dedicated graphics                 AMD Radeon RX 7700 XT – 12 GB dedicated memory
+
+BATTERY
+------------------------------------------------------------------------
+Battery                            Not applicable (no battery detected)
+
+CONNECTIVITY
+------------------------------------------------------------------------
+Wi-Fi                              Wi-Fi 6E (802.11ax, 6 GHz) – MediaTek Wi-Fi 6E MT7922 160MHz Wireless LAN Card
+Bluetooth                          Available
+Ethernet                           Available
+Webcam                             HD Pro Webcam C920
+Audio                              Available
+
+WINDOWS
+------------------------------------------------------------------------
+Edition                            Windows 11 Pro
+Version                            25H2 (build 26200.9974)
+Activation                         Not activated (notification)
+TPM                                TPM 2.0
+Secure Boot                        Disabled (capable)
+Windows 11 readiness               Already running Windows 11. (estimated)
+
+DEVICE HEALTH
+------------------------------------------------------------------------
+Battery health                     Not applicable No battery
+                                   No battery detected. This is normal for desktop computers.
+1 TB NVMe SSD health               Good           Healthy (reported)
+                                   Samsung SSD 970 EVO Plus 1TB. Windows reports this drive as healthy.
+1 TB NVMe SSD power-on hours       Unavailable    Not available
+                                   Power-on hours were not available for this drive.
+4 TB NVMe SSD health               Good           Healthy (reported)
+                                   KINGSTON SNV2S4000G. Windows reports this drive as healthy.
+4 TB NVMe SSD power-on hours       Unavailable    Not available
+                                   Power-on hours were not available for this drive.
+Windows activation                 Issue          Not activated
+                                   Windows is showing activation notifications.
+Windows 11 compatibility           Good           Compatible (checked requirements)
+                                   Already running Windows 11.
+
+HARDWARE TESTS
+------------------------------------------------------------------------
+Keyboard test                      Unavailable    Not tested
+                                   Run this test from the Hardware Tests page.
+Display test                       Unavailable    Not tested
+                                   Run this test from the Hardware Tests page.
+Speakers test                      Unavailable    Not tested
+                                   Run this test from the Hardware Tests page.
+Microphone test                    Unavailable    Not tested
+                                   Run this test from the Hardware Tests page.
+Webcam test                        Unavailable    Not tested
+                                   Run this test from the Hardware Tests page.
+Connectivity test                  Unavailable    Not tested
+                                   Run this test from the Hardware Tests page.
+
+SELLER-REPORTED CONDITION
+------------------------------------------------------------------------
+Condition                          Not provided by the seller
+
+========================================================================
+Specifications were collected from the device by SellSpec at the time shown. Physical condition, included items and some test results were supplied by the seller and have not been independently verified. Battery and storage health figures are values reported by the device and are estimates, not guarantees. This report is not a certification and is not tamper-proof.
+Generated 25 November 2026, 5:35 PM. SellSpec – Scan it. List it. Sell it.

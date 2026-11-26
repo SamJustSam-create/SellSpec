@@ -1,0 +1,557 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [7 0 R 9 0 R 11 0 R] /Count 3 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding >>
+endobj
+6 0 obj
+<< /Title (SellSpec device report ? Custom-built desktop PC) /Producer (SellSpec 0.1.0-alpha) /Creator (SellSpec 0.1.0-alpha) /CreationDate (D:20261125173548+11'00') >>
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 8 0 R >>
+endobj
+8 0 obj
+<< /Length 6504 >>
+stream
+0.122 0.165 0.216 rg
+0 779.89 595.28 62 re f
+0.059 0.424 0.741 rg
+0 776.89 595.28 3 re f
+1 1 1 rg
+BT /F2 20 Tf 44 811.89 Td (SellSpec) Tj ET
+0.788 0.827 0.878 rg
+BT /F1 10 Tf 44 795.89 Td (Device specification report) Tj ET
+1 1 1 rg
+BT /F1 9.5 Tf 430.355 811.89 Td (Scanned 25 November 2026) Tj ET
+0.788 0.827 0.878 rg
+BT /F1 9 Tf 468.237 795.89 Td (SellSpec 0.1.0-alpha) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 17 Tf 44 748.89 Td (Custom-built desktop PC) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 10.5 Tf 44 727.89 Td (Gigabyte B550M K motherboard ∑ Desktop PC ∑ Windows 11 Pro) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 10.5 Tf 44 712.89 Td (AMD Ryzen 5 5600 ∑ 32 GB RAM ∑ 4 TB NVMe SSD + 1 TB NVMe SSD) Tj ET
+0.059 0.424 0.741 rg
+BT /F2 10 Tf 44 678.89 Td (SPECIFICATIONS) Tj ET
+0.851 0.851 0.851 RG
+0.75 w 44 672.89 m 551.28 672.89 l S
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 644.89 Td (System) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 623.89 Td (Type) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 623.89 Td (Custom-built PC) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 269.151 623.89 Td (\(estimated\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 613.89 Td (The system manufacturer and model match the motherboard, which indicates a self-built computer.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 596.89 Td (Motherboard) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 596.89 Td (Gigabyte B550M K) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 279.734 596.89 Td (\(firmware reported\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 579.89 Td (Form factor) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 579.89 Td (Desktop PC) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 250.683 579.89 Td (\(firmware reported\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 562.89 Td (Architecture) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 562.89 Td (x64) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 545.89 Td (BIOS/UEFI version) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 545.89 Td (F3 \(Jun 2023\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 259.138 545.89 Td (\(firmware reported\)) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 523.89 Td (Processor) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 502.89 Td (Processor) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 502.89 Td (AMD Ryzen 5 5600) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 485.89 Td (Cores / threads) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 485.89 Td (6 / 12) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 468.89 Td (Reported clock speed) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 468.89 Td (3.5 GHz) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 234.846 468.89 Td (\(firmware reported\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 458.89 Td (Reported base/maximum clock; actual speeds vary with boost and power limits.) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 436.89 Td (Memory) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 415.89 Td (Installed memory) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 415.89 Td (32 GB) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 226.933 415.89 Td (\(firmware reported\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 398.89 Td (Usable memory) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 398.89 Td (31.9 GB) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 381.89 Td (Memory type) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 381.89 Td (DDR4) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 225.859 381.89 Td (\(firmware reported\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 364.89 Td (Configured speed) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 364.89 Td (3200 MT/s) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 244.878 364.89 Td (\(firmware reported\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 347.89 Td (Modules) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 347.89 Td (8 GB DIMM + 8 GB DIMM + 8 GB DIMM + 8 GB DIMM) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 430.964 347.89 Td (\(firmware reported\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 330.89 Td (Memory slots \(firmware\)) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 330.89 Td (4 reported) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 243.301 330.89 Td (\(firmware reported\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 320.89 Td (A slot count does not prove the memory is physically replaceable.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 303.89 Td (Upgradeable) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 303.89 Td (Not verified) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 248.042 303.89 Td (\(estimated\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 293.89 Td (Firmware reports 4 memory slots with 4 modules detected. Modules report the DIMM form factor.) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 283.89 Td (Socketed modules are often replaceable, but this has not been verified for this model. Check the) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 273.89 Td (manufacturer's documentation before advertising memory as upgradeable.) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 251.89 Td (Storage 1) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 230.89 Td (Drive) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 230.89 Td (Samsung SSD 970 EVO Plus 1TB) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 213.89 Td (Capacity) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 213.89 Td (1 TB) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 196.89 Td (Type) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 196.89 Td (NVMe SSD) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 179.89 Td (Reported health) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 179.89 Td (Healthy \(reported\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 169.89 Td (Windows reports this drive as healthy.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 152.89 Td (Power-on hours) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 194 152.89 Td (Not available) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 142.89 Td (Power-on hours were not available for this drive.) Tj ET
+0.851 0.851 0.851 RG
+0.5 w 44 92 m 551.28 92 l S
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 81 Td (Specifications were collected from the device by SellSpec at the time shown. Physical condition, included items and some test results were) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 72.5 Td (supplied by the seller and have not been independently verified. Battery and storage health figures are values reported by the device and are) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 64 Td (estimates, not guarantees. This report is not a certification and is not tamper-proof.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 8 Tf 510.36 81 Td (Page 1 of 3) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 340.783 38 Td (Generated 25 Nov 2026, 5:35 PM ∑ SellSpec ñ Scan it. List it. Sell it.) Tj ET
+
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 10 0 R >>
+endobj
+10 0 obj
+<< /Length 6741 >>
+stream
+0.361 0.361 0.361 rg
+BT /F2 9 Tf 44 789.89 Td (SellSpec device report) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 451.749 789.89 Td (Custom-built desktop PC) Tj ET
+0.851 0.851 0.851 RG
+0.5 w 44 781.89 m 551.28 781.89 l S
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 753.89 Td (Storage 2) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 732.89 Td (Drive) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 732.89 Td (KINGSTON SNV2S4000G) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 715.89 Td (Capacity) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 715.89 Td (4 TB) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 698.89 Td (Type) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 698.89 Td (NVMe SSD) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 681.89 Td (Role) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 681.89 Td (Windows system drive) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 664.89 Td (Reported health) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 664.89 Td (Healthy \(reported\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 654.89 Td (Windows reports this drive as healthy.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 637.89 Td (Power-on hours) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 194 637.89 Td (Not available) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 627.89 Td (Power-on hours were not available for this drive.) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 605.89 Td (Graphics) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 584.89 Td (Dedicated graphics) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 584.89 Td (AMD Radeon RX 7700 XT ñ 12 GB dedicated memory) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 562.89 Td (Battery) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 541.89 Td (Battery) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 194 541.89 Td (Not applicable \(no battery detected\)) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 519.89 Td (Connectivity) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 498.89 Td (Wi-Fi) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 498.89 Td (Wi-Fi 6E \(802.11ax, 6 GHz\) ñ MediaTek Wi-Fi 6E MT7922 160MHz Wireless LAN) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 486.89 Td (Card) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 476.89 Td (802.11ax confirmed by the wireless driver; 6 GHz support inferred from the adapter model.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 459.89 Td (Bluetooth) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 459.89 Td (Available) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 442.89 Td (Ethernet) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 442.89 Td (Available) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 425.89 Td (Webcam) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 425.89 Td (HD Pro Webcam C920) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 408.89 Td (Audio) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 408.89 Td (Available) Tj ET
+0.106 0.106 0.106 rg
+BT /F2 10.5 Tf 44 386.89 Td (Windows) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 365.89 Td (Edition) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 365.89 Td (Windows 11 Pro) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 348.89 Td (Version) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 348.89 Td (25H2 \(build 26200.9974\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 331.89 Td (Activation) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 331.89 Td (Not activated \(notification\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 314.89 Td (TPM) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 314.89 Td (TPM 2.0) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 297.89 Td (Secure Boot) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 297.89 Td (Disabled \(capable\)) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 280.89 Td (Windows 11 readiness) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 194 280.89 Td (Already running Windows 11.) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 323.548 280.89 Td (\(estimated\)) Tj ET
+0.059 0.424 0.741 rg
+BT /F2 10 Tf 44 258.89 Td (DEVICE HEALTH) Tj ET
+0.851 0.851 0.851 RG
+0.75 w 44 252.89 m 551.28 252.89 l S
+0.541 0.541 0.541 rg
+51.2 233.39 m
+51.2 235.157 49.767 236.59 48 236.59 c
+46.233 236.59 44.8 235.157 44.8 233.39 c
+44.8 231.623 46.233 230.19 48 230.19 c
+49.767 230.19 51.2 231.623 51.2 233.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 229.89 Td (Battery health) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 229.89 Td (Not applicable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 229.89 Td (No battery) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 219.89 Td (No battery detected. This is normal for desktop computers.) Tj ET
+0.059 0.482 0.059 rg
+51.2 205.39 m
+51.2 207.157 49.767 208.59 48 208.59 c
+46.233 208.59 44.8 207.157 44.8 205.39 c
+44.8 203.623 46.233 202.19 48 202.19 c
+49.767 202.19 51.2 203.623 51.2 205.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 201.89 Td (1 TB NVMe SSD health) Tj ET
+0.059 0.482 0.059 rg
+BT /F2 9 Tf 194 201.89 Td (Good) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 284 201.89 Td (Healthy \(reported\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 191.89 Td (Samsung SSD 970 EVO Plus 1TB. Windows reports this drive as healthy.) Tj ET
+0.541 0.541 0.541 rg
+51.2 177.39 m
+51.2 179.157 49.767 180.59 48 180.59 c
+46.233 180.59 44.8 179.157 44.8 177.39 c
+44.8 175.623 46.233 174.19 48 174.19 c
+49.767 174.19 51.2 175.623 51.2 177.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 173.89 Td (1 TB NVMe SSD power-on hours) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 173.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 173.89 Td (Not available) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 163.89 Td (Power-on hours were not available for this drive.) Tj ET
+0.059 0.482 0.059 rg
+51.2 149.39 m
+51.2 151.157 49.767 152.59 48 152.59 c
+46.233 152.59 44.8 151.157 44.8 149.39 c
+44.8 147.623 46.233 146.19 48 146.19 c
+49.767 146.19 51.2 147.623 51.2 149.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 145.89 Td (4 TB NVMe SSD health) Tj ET
+0.059 0.482 0.059 rg
+BT /F2 9 Tf 194 145.89 Td (Good) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 284 145.89 Td (Healthy \(reported\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 135.89 Td (KINGSTON SNV2S4000G. Windows reports this drive as healthy.) Tj ET
+0.851 0.851 0.851 RG
+0.5 w 44 92 m 551.28 92 l S
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 81 Td (Specifications were collected from the device by SellSpec at the time shown. Physical condition, included items and some test results were) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 72.5 Td (supplied by the seller and have not been independently verified. Battery and storage health figures are values reported by the device and are) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 64 Td (estimates, not guarantees. This report is not a certification and is not tamper-proof.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 8 Tf 510.36 81 Td (Page 2 of 3) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 340.783 38 Td (Generated 25 Nov 2026, 5:35 PM ∑ SellSpec ñ Scan it. List it. Sell it.) Tj ET
+
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R >> >> /Contents 12 0 R >>
+endobj
+12 0 obj
+<< /Length 5925 >>
+stream
+0.361 0.361 0.361 rg
+BT /F2 9 Tf 44 789.89 Td (SellSpec device report) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 451.749 789.89 Td (Custom-built desktop PC) Tj ET
+0.851 0.851 0.851 RG
+0.5 w 44 781.89 m 551.28 781.89 l S
+0.541 0.541 0.541 rg
+51.2 762.39 m
+51.2 764.157 49.767 765.59 48 765.59 c
+46.233 765.59 44.8 764.157 44.8 762.39 c
+44.8 760.623 46.233 759.19 48 759.19 c
+49.767 759.19 51.2 760.623 51.2 762.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 758.89 Td (4 TB NVMe SSD power-on hours) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 758.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 758.89 Td (Not available) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 748.89 Td (Power-on hours were not available for this drive.) Tj ET
+0.769 0.169 0.11 rg
+51.2 734.39 m
+51.2 736.157 49.767 737.59 48 737.59 c
+46.233 737.59 44.8 736.157 44.8 734.39 c
+44.8 732.623 46.233 731.19 48 731.19 c
+49.767 731.19 51.2 732.623 51.2 734.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 730.89 Td (Windows activation) Tj ET
+0.769 0.169 0.11 rg
+BT /F2 9 Tf 194 730.89 Td (Issue) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 284 730.89 Td (Not activated) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 720.89 Td (Windows is showing activation notifications.) Tj ET
+0.059 0.482 0.059 rg
+51.2 706.39 m
+51.2 708.157 49.767 709.59 48 709.59 c
+46.233 709.59 44.8 708.157 44.8 706.39 c
+44.8 704.623 46.233 703.19 48 703.19 c
+49.767 703.19 51.2 704.623 51.2 706.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 702.89 Td (Windows 11 compatibility) Tj ET
+0.059 0.482 0.059 rg
+BT /F2 9 Tf 194 702.89 Td (Good) Tj ET
+0.106 0.106 0.106 rg
+BT /F1 9.5 Tf 284 702.89 Td (Compatible \(checked requirements\)) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 692.89 Td (Already running Windows 11.) Tj ET
+0.059 0.424 0.741 rg
+BT /F2 10 Tf 44 669.89 Td (HARDWARE TESTS) Tj ET
+0.851 0.851 0.851 RG
+0.75 w 44 663.89 m 551.28 663.89 l S
+0.541 0.541 0.541 rg
+51.2 644.39 m
+51.2 646.157 49.767 647.59 48 647.59 c
+46.233 647.59 44.8 646.157 44.8 644.39 c
+44.8 642.623 46.233 641.19 48 641.19 c
+49.767 641.19 51.2 642.623 51.2 644.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 640.89 Td (Keyboard test) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 640.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 640.89 Td (Not tested) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 630.89 Td (Run this test from the Hardware Tests page.) Tj ET
+0.541 0.541 0.541 rg
+51.2 616.39 m
+51.2 618.157 49.767 619.59 48 619.59 c
+46.233 619.59 44.8 618.157 44.8 616.39 c
+44.8 614.623 46.233 613.19 48 613.19 c
+49.767 613.19 51.2 614.623 51.2 616.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 612.89 Td (Display test) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 612.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 612.89 Td (Not tested) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 602.89 Td (Run this test from the Hardware Tests page.) Tj ET
+0.541 0.541 0.541 rg
+51.2 588.39 m
+51.2 590.157 49.767 591.59 48 591.59 c
+46.233 591.59 44.8 590.157 44.8 588.39 c
+44.8 586.623 46.233 585.19 48 585.19 c
+49.767 585.19 51.2 586.623 51.2 588.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 584.89 Td (Speakers test) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 584.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 584.89 Td (Not tested) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 574.89 Td (Run this test from the Hardware Tests page.) Tj ET
+0.541 0.541 0.541 rg
+51.2 560.39 m
+51.2 562.157 49.767 563.59 48 563.59 c
+46.233 563.59 44.8 562.157 44.8 560.39 c
+44.8 558.623 46.233 557.19 48 557.19 c
+49.767 557.19 51.2 558.623 51.2 560.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 556.89 Td (Microphone test) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 556.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 556.89 Td (Not tested) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 546.89 Td (Run this test from the Hardware Tests page.) Tj ET
+0.541 0.541 0.541 rg
+51.2 532.39 m
+51.2 534.157 49.767 535.59 48 535.59 c
+46.233 535.59 44.8 534.157 44.8 532.39 c
+44.8 530.623 46.233 529.19 48 529.19 c
+49.767 529.19 51.2 530.623 51.2 532.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 528.89 Td (Webcam test) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 528.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 528.89 Td (Not tested) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 518.89 Td (Run this test from the Hardware Tests page.) Tj ET
+0.541 0.541 0.541 rg
+51.2 504.39 m
+51.2 506.157 49.767 507.59 48 507.59 c
+46.233 507.59 44.8 506.157 44.8 504.39 c
+44.8 502.623 46.233 501.19 48 501.19 c
+49.767 501.19 51.2 502.623 51.2 504.39 c f
+0.106 0.106 0.106 rg
+BT /F1 9 Tf 56 500.89 Td (Connectivity test) Tj ET
+0.541 0.541 0.541 rg
+BT /F2 9 Tf 194 500.89 Td (Unavailable) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 284 500.89 Td (Not tested) Tj ET
+0.541 0.541 0.541 rg
+BT /F3 8 Tf 194 490.89 Td (Run this test from the Hardware Tests page.) Tj ET
+0.059 0.424 0.741 rg
+BT /F2 10 Tf 44 467.89 Td (SELLER-REPORTED CONDITION) Tj ET
+0.851 0.851 0.851 RG
+0.75 w 44 461.89 m 551.28 461.89 l S
+0.361 0.361 0.361 rg
+BT /F1 9 Tf 44 438.89 Td (Condition) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 9.5 Tf 194 438.89 Td (Not provided by the seller) Tj ET
+0.851 0.851 0.851 RG
+0.5 w 44 92 m 551.28 92 l S
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 81 Td (Specifications were collected from the device by SellSpec at the time shown. Physical condition, included items and some test results were) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 72.5 Td (supplied by the seller and have not been independently verified. Battery and storage health figures are values reported by the device and are) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 44 64 Td (estimates, not guarantees. This report is not a certification and is not tamper-proof.) Tj ET
+0.361 0.361 0.361 rg
+BT /F1 8 Tf 510.36 81 Td (Page 3 of 3) Tj ET
+0.541 0.541 0.541 rg
+BT /F1 7 Tf 340.783 38 Td (Generated 25 Nov 2026, 5:35 PM ∑ SellSpec ñ Scan it. List it. Sell it.) Tj ET
+
+endstream
+endobj
+xref
+0 13
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000134 00000 n 
+0000000231 00000 n 
+0000000333 00000 n 
+0000000438 00000 n 
+0000000622 00000 n 
+0000000774 00000 n 
+0000007330 00000 n 
+0000007483 00000 n 
+0000014277 00000 n 
+0000014431 00000 n 
+trailer
+<< /Size 13 /Root 1 0 R /Info 6 0 R >>
+startxref
+20409
+%%EOF

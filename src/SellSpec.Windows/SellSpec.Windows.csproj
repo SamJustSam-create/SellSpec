@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <RootNamespace>SellSpec.Windows</RootNamespace>
+    <AssemblyName>SellSpec.Windows</AssemblyName>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SellSpec.Core\SellSpec.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- WMI/CIM access for .NET (MIT licence, Microsoft). -->
+    <PackageReference Include="System.Management" Version="10.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="SellSpec.Windows.Tests" />
+  </ItemGroup>
+</Project>

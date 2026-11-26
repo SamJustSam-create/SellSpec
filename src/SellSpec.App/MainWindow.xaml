@@ -1,0 +1,104 @@
+<Window x:Class="SellSpec.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SellSpec.App.ViewModels"
+        xmlns:conv="clr-namespace:SellSpec.App.Converters"
+        mc:Ignorable="d"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        d:DataContext="{d:DesignInstance Type=vm:ShellViewModel}"
+        Title="SellSpec" Width="1200" Height="780" MinWidth="880" MinHeight="580"
+        Icon="Assets/SellSpec.ico"
+        Background="{DynamicResource WindowBackgroundBrush}"
+        FontFamily="{StaticResource FontBody}"
+        TextOptions.TextFormattingMode="Ideal"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        WindowStartupLocation="CenterScreen">
+  <Window.Resources>
+    <conv:BoolToDockConverter x:Key="BoolToDock" />
+  </Window.Resources>
+  <Grid x:Name="RootGrid" Background="{DynamicResource WindowBackgroundBrush}">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <!-- Navigation pane -->
+    <Border x:Name="NavPane" Grid.Column="0" Background="{DynamicResource SidebarBackgroundBrush}" Width="{StaticResource NavWidth}">
+      <Border.Style>
+        <Style TargetType="Border">
+          <Style.Triggers>
+            <DataTrigger Binding="{Binding IsNavCompact}" Value="True">
+              <Setter Property="Width" Value="{StaticResource NavCompactWidth}" />
+            </DataTrigger>
+          </Style.Triggers>
+        </Style>
+      </Border.Style>
+      <DockPanel Margin="0,12,0,12">
+        <!-- Brand -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="14,4,8,16">
+          <Image Source="Assets/SellSpec.png" Width="28" Height="28" RenderOptions.BitmapScalingMode="HighQuality" />
+          <StackPanel Margin="10,0,0,0" VerticalAlignment="Center" Visibility="{Binding IsNavCompact, Converter={StaticResource InverseBoolToVisibility}}">
+            <TextBlock Text="SellSpec" FontWeight="SemiBold" FontSize="15" />
+            <TextBlock Text="{Binding AppVersion, StringFormat='Version {0}'}" Style="{StaticResource CaptionText}" />
+          </StackPanel>
+        </StackPanel>
+
+        <ListBox ItemsSource="{Binding NavigationItems}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" Style="{StaticResource NavListBox}"
+                 AutomationProperties.Name="Navigation">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <DockPanel LastChildFill="False" />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem" BasedOn="{StaticResource NavItem}">
+              <Setter Property="DockPanel.Dock" Value="{Binding IsFooter, Converter={StaticResource BoolToDock}}" />
+              <Setter Property="ToolTip" Value="{Binding Title}" />
+              <Setter Property="AutomationProperties.Name" Value="{Binding Title}" />
+            </Style>
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate DataType="{x:Type vm:NavigationItem}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Glyph}" Style="{StaticResource IconText}" Width="20" />
+                <TextBlock Text="{Binding Title}" Margin="12,0,0,0" VerticalAlignment="Center"
+                           Visibility="{Binding DataContext.IsNavCompact, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource InverseBoolToVisibility}}" />
+              </StackPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </Border>
+
+    <!-- Content -->
+    <Grid Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <!-- Scan strip -->
+      <Border Grid.Row="0" Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource SurfaceStrokeBrush}" BorderThickness="0,0,0,1" Padding="32,8" Visibility="{Binding IsScanning, Converter={StaticResource BoolToVisibility}}">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <StackPanel>
+            <TextBlock Text="{Binding ScanStatusText}" FontWeight="SemiBold" />
+            <ProgressBar Value="{Binding ScanProgress, Mode=OneWay}" Maximum="1" Margin="0,6,0,0" Width="320" HorizontalAlignment="Left" />
+          </StackPanel>
+          <Button Grid.Column="1" Content="Cancel" Command="{Binding CancelScanCommand}" Style="{StaticResource SubtleButton}" VerticalAlignment="Center" />
+        </Grid>
+      </Border>
+
+      <Border Grid.Row="0" Background="{DynamicResource WarningBackgroundBrush}" Padding="32,6" Visibility="{Binding IsDemo, Converter={StaticResource BoolToVisibility}}">
+        <TextBlock Text="Demonstration mode: this is a fictional device, not real hardware. Start SellSpec without --demo to scan this computer." FontSize="12" Foreground="{DynamicResource WarningBrush}" />
+      </Border>
+
+      <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" Focusable="False" />
+    </Grid>
+  </Grid>
+</Window>

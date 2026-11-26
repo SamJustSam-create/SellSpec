@@ -1,0 +1,98 @@
+<UserControl x:Class="SellSpec.App.Views.HardwareTestsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SellSpec.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=vm:HardwareTestsViewModel}">
+  <ScrollViewer>
+    <StackPanel Margin="{StaticResource PagePadding}" MaxWidth="1000" HorizontalAlignment="Left">
+      <TextBlock Text="Hardware Tests" Style="{StaticResource PageTitle}" />
+      <TextBlock Text="Optional, non-destructive checks. You judge each result; SellSpec records it as seller-confirmed and includes it in listings and reports." Style="{StaticResource PageSubtitle}" />
+
+      <ItemsControl ItemsSource="{Binding Tests}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type vm:HardwareTestCardViewModel}">
+            <Border Style="{StaticResource Card}" Margin="0,0,0,12">
+              <StackPanel>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                  </Grid.ColumnDefinitions>
+                  <Border Width="40" Height="40" CornerRadius="8" Background="{DynamicResource AccentSubtleBrush}" VerticalAlignment="Top">
+                    <TextBlock Text="{Binding Glyph}" Style="{StaticResource IconText}" FontSize="18" Foreground="{DynamicResource AccentTextBrush}" />
+                  </Border>
+                  <StackPanel Grid.Column="1" Margin="14,0,14,0">
+                    <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Text="{Binding Description}" Style="{StaticResource SecondaryText}" Margin="0,2,0,0" />
+                    <TextBlock Text="{Binding DetectedSummary}" Style="{StaticResource CaptionText}" Margin="0,4,0,0" Visibility="{Binding DetectedSummary, Converter={StaticResource StringToVisibility}}" />
+                  </StackPanel>
+                  <ContentPresenter Grid.Column="2" Content="{Binding}" ContentTemplate="{StaticResource StatusBadge}" VerticalAlignment="Top" />
+                </Grid>
+
+                <!-- Kind-specific controls -->
+                <WrapPanel Margin="54,12,0,0">
+                  <Button Content="Open keyboard test" Command="{Binding RunKeyboardTestCommand}" Visibility="{Binding IsKeyboard, Converter={StaticResource BoolToVisibility}}" Margin="0,0,8,8" />
+                  <Button Content="Start full-screen colour test" Command="{Binding RunDisplayTestCommand}" Visibility="{Binding IsDisplay, Converter={StaticResource BoolToVisibility}}" Margin="0,0,8,8" />
+                  <StackPanel Orientation="Horizontal" Visibility="{Binding IsSpeakers, Converter={StaticResource BoolToVisibility}}">
+                    <Button Content="Play left" Command="{Binding PlayToneCommand}" CommandParameter="left" Margin="0,0,8,8" />
+                    <Button Content="Play right" Command="{Binding PlayToneCommand}" CommandParameter="right" Margin="0,0,8,8" />
+                    <Button Content="Play both" Command="{Binding PlayToneCommand}" CommandParameter="both" Margin="0,0,8,8" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" Visibility="{Binding IsMicrophone, Converter={StaticResource BoolToVisibility}}">
+                    <Button Command="{Binding ToggleMicrophoneCommand}" Margin="0,0,12,8" MinWidth="130">
+                      <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                          <Setter Property="Content" Value="Start listening" />
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsListening}" Value="True">
+                              <Setter Property="Content" Value="Stop" />
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </Button.Style>
+                    </Button>
+                    <StackPanel VerticalAlignment="Center" Width="240" Margin="0,0,0,8">
+                      <ProgressBar Value="{Binding Level, Mode=OneWay}" Maximum="1" Height="8" />
+                      <ProgressBar Value="{Binding PeakLevel, Mode=OneWay}" Maximum="1" Height="3" Margin="0,4,0,0" Foreground="{DynamicResource WarningBrush}" />
+                      <TextBlock Text="Input level (nothing is recorded)" Style="{StaticResource CaptionText}" Margin="0,4,0,0" />
+                    </StackPanel>
+                  </StackPanel>
+                  <Button Content="Open Windows Camera" Command="{Binding OpenCameraAppCommand}" Visibility="{Binding IsWebcam, Converter={StaticResource BoolToVisibility}}" Margin="0,0,8,8" />
+                  <WrapPanel Visibility="{Binding IsConnectivity, Converter={StaticResource BoolToVisibility}}">
+                    <CheckBox Content="Wi-Fi connects" IsChecked="{Binding WifiConfirmed}" Margin="0,0,16,8" />
+                    <CheckBox Content="Bluetooth pairs" IsChecked="{Binding BluetoothConfirmed}" Margin="0,0,16,8" />
+                    <CheckBox Content="Ethernet works" IsChecked="{Binding EthernetConfirmed}" Margin="0,0,16,8" />
+                    <CheckBox Content="USB ports work" IsChecked="{Binding UsbConfirmed}" Margin="0,0,16,8" />
+                    <CheckBox Content="Video output works" IsChecked="{Binding VideoOutConfirmed}" Margin="0,0,16,8" />
+                  </WrapPanel>
+                </WrapPanel>
+
+                <TextBlock Text="{Binding Hint}" Style="{StaticResource CaptionText}" Margin="54,0,0,8" Visibility="{Binding Hint, Converter={StaticResource StringToVisibility}}" />
+                <TextBlock Text="{Binding Evidence}" FontWeight="SemiBold" FontSize="12" Margin="54,0,0,8" Visibility="{Binding Evidence, Converter={StaticResource StringToVisibility}}" />
+
+                <!-- Outcome -->
+                <Grid Margin="54,4,0,0">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <WrapPanel VerticalAlignment="Top">
+                    <RadioButton Style="{StaticResource ChoiceChip}" Content="Passed" IsChecked="{Binding Outcome, Converter={StaticResource EnumToBool}, ConverterParameter=Passed}" />
+                    <RadioButton Style="{StaticResource ChoiceChip}" Content="Passed with notes" IsChecked="{Binding Outcome, Converter={StaticResource EnumToBool}, ConverterParameter=PassedWithNotes}" />
+                    <RadioButton Style="{StaticResource ChoiceChip}" Content="Failed" IsChecked="{Binding Outcome, Converter={StaticResource EnumToBool}, ConverterParameter=Failed}" />
+                    <Button Content="Clear" Style="{StaticResource LinkButton}" Command="{Binding ClearResultCommand}" VerticalAlignment="Center" Margin="0,0,0,8" />
+                  </WrapPanel>
+                  <TextBox Grid.Column="1" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" Margin="12,0,0,0" MinWidth="200" Style="{StaticResource MultilineTextBox}" MinHeight="32" MaxHeight="80"
+                           AutomationProperties.Name="Test notes" ToolTip="Optional notes, e.g. 'two keys sticky' or 'faint backlight bleed bottom-left'." />
+                </Grid>
+              </StackPanel>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

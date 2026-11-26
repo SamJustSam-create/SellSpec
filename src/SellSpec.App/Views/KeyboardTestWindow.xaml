@@ -1,0 +1,28 @@
+<Window x:Class="SellSpec.App.Views.KeyboardTestWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Keyboard test – SellSpec" Width="1060" Height="520" MinWidth="820" MinHeight="420"
+        WindowStartupLocation="CenterOwner" ResizeMode="CanResize" ShowInTaskbar="False"
+        Background="{DynamicResource WindowBackgroundBrush}" FontFamily="{StaticResource FontBody}"
+        Icon="/Assets/SellSpec.ico">
+  <Grid Margin="24">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <StackPanel>
+      <TextBlock Text="Press every key" Style="{StaticResource SubtitleText}" />
+      <TextBlock Style="{StaticResource SecondaryText}" Margin="0,4,0,12"
+                 Text="Keys light up as they register. The Windows key, Fn and Print Screen may be intercepted by Windows; test them by eye. Close with the Done button when finished." />
+    </StackPanel>
+    <Viewbox Grid.Row="1" Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Left" VerticalAlignment="Top">
+      <StackPanel x:Name="KeyboardPanel" />
+    </Viewbox>
+    <DockPanel Grid.Row="2" Margin="0,16,0,0">
+      <Button DockPanel.Dock="Right" Content="Done" Style="{StaticResource AccentButton}" MinWidth="120" Click="Done_Click" IsDefault="False" IsCancel="False" />
+      <Button DockPanel.Dock="Right" Content="Reset" Style="{StaticResource SubtleButton}" Click="Reset_Click" Margin="0,0,8,0" />
+      <TextBlock x:Name="CountText" VerticalAlignment="Center" FontWeight="SemiBold" />
+    </DockPanel>
+  </Grid>
+</Window>

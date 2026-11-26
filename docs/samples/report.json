@@ -1,0 +1,398 @@
+{
+  "schemaVersion": "1.0",
+  "applicationName": "SellSpec",
+  "applicationVersion": "0.1.0-alpha",
+  "scannedAt": "2026-11-25T17:35:41.364122+11:00",
+  "generatedAt": "2026-11-25T17:35:48.7466923+11:00",
+  "deviceName": "Custom-built desktop PC",
+  "deviceSecondaryName": "Gigabyte B550M K motherboard",
+  "deviceType": "Desktop PC",
+  "operatingSystem": "Windows 11 Pro",
+  "headline": "AMD Ryzen 5 5600 \u00B7 32 GB RAM \u00B7 4 TB NVMe SSD \u002B 1 TB NVMe SSD",
+  "specifications": [
+    {
+      "title": "System",
+      "fields": [
+        {
+          "label": "Type",
+          "value": "Custom-built PC",
+          "provenance": "Estimated",
+          "note": "The system manufacturer and model match the motherboard, which indicates a self-built computer.",
+          "provenanceTag": "estimated"
+        },
+        {
+          "label": "Motherboard",
+          "value": "Gigabyte B550M K",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Form factor",
+          "value": "Desktop PC",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Architecture",
+          "value": "x64",
+          "provenance": "Detected"
+        },
+        {
+          "label": "BIOS/UEFI version",
+          "value": "F3 (Jun 2023)",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        }
+      ]
+    },
+    {
+      "title": "Processor",
+      "fields": [
+        {
+          "label": "Processor",
+          "value": "AMD Ryzen 5 5600",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Cores / threads",
+          "value": "6 / 12",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Reported clock speed",
+          "value": "3.5 GHz",
+          "provenance": "FirmwareReported",
+          "note": "Reported base/maximum clock; actual speeds vary with boost and power limits.",
+          "provenanceTag": "firmware reported"
+        }
+      ]
+    },
+    {
+      "title": "Memory",
+      "fields": [
+        {
+          "label": "Installed memory",
+          "value": "32 GB",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Usable memory",
+          "value": "31.9 GB",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Memory type",
+          "value": "DDR4",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Configured speed",
+          "value": "3200 MT/s",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Modules",
+          "value": "8 GB DIMM \u002B 8 GB DIMM \u002B 8 GB DIMM \u002B 8 GB DIMM",
+          "provenance": "FirmwareReported",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Memory slots (firmware)",
+          "value": "4 reported",
+          "provenance": "FirmwareReported",
+          "note": "A slot count does not prove the memory is physically replaceable.",
+          "provenanceTag": "firmware reported"
+        },
+        {
+          "label": "Upgradeable",
+          "value": "Not verified",
+          "provenance": "Estimated",
+          "note": "Firmware reports 4 memory slots with 4 modules detected. Modules report the DIMM form factor. Socketed modules are often replaceable, but this has not been verified for this model. Check the manufacturer\u0027s documentation before advertising memory as upgradeable.",
+          "provenanceTag": "estimated"
+        }
+      ]
+    },
+    {
+      "title": "Storage 1",
+      "fields": [
+        {
+          "label": "Drive",
+          "value": "Samsung SSD 970 EVO Plus 1TB",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Capacity",
+          "value": "1 TB",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Type",
+          "value": "NVMe SSD",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Reported health",
+          "value": "Healthy (reported)",
+          "provenance": "Detected",
+          "note": "Windows reports this drive as healthy."
+        },
+        {
+          "label": "Power-on hours",
+          "value": "Not available",
+          "provenance": "Unavailable",
+          "note": "Power-on hours were not available for this drive.",
+          "provenanceTag": "unavailable"
+        }
+      ]
+    },
+    {
+      "title": "Storage 2",
+      "fields": [
+        {
+          "label": "Drive",
+          "value": "KINGSTON SNV2S4000G",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Capacity",
+          "value": "4 TB",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Type",
+          "value": "NVMe SSD",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Role",
+          "value": "Windows system drive",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Reported health",
+          "value": "Healthy (reported)",
+          "provenance": "Detected",
+          "note": "Windows reports this drive as healthy."
+        },
+        {
+          "label": "Power-on hours",
+          "value": "Not available",
+          "provenance": "Unavailable",
+          "note": "Power-on hours were not available for this drive.",
+          "provenanceTag": "unavailable"
+        }
+      ]
+    },
+    {
+      "title": "Graphics",
+      "fields": [
+        {
+          "label": "Dedicated graphics",
+          "value": "AMD Radeon RX 7700 XT \u2013 12 GB dedicated memory",
+          "provenance": "Detected"
+        }
+      ]
+    },
+    {
+      "title": "Battery",
+      "fields": [
+        {
+          "label": "Battery",
+          "value": "Not applicable (no battery detected)",
+          "provenance": "NotApplicable",
+          "provenanceTag": "not applicable"
+        }
+      ]
+    },
+    {
+      "title": "Connectivity",
+      "fields": [
+        {
+          "label": "Wi-Fi",
+          "value": "Wi-Fi 6E (802.11ax, 6 GHz) \u2013 MediaTek Wi-Fi 6E MT7922 160MHz Wireless LAN Card",
+          "provenance": "Detected",
+          "note": "802.11ax confirmed by the wireless driver; 6 GHz support inferred from the adapter model."
+        },
+        {
+          "label": "Bluetooth",
+          "value": "Available",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Ethernet",
+          "value": "Available",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Webcam",
+          "value": "HD Pro Webcam C920",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Audio",
+          "value": "Available",
+          "provenance": "Detected"
+        }
+      ]
+    },
+    {
+      "title": "Windows",
+      "fields": [
+        {
+          "label": "Edition",
+          "value": "Windows 11 Pro",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Version",
+          "value": "25H2 (build 26200.9974)",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Activation",
+          "value": "Not activated (notification)",
+          "provenance": "Detected"
+        },
+        {
+          "label": "TPM",
+          "value": "TPM 2.0",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Secure Boot",
+          "value": "Disabled (capable)",
+          "provenance": "Detected"
+        },
+        {
+          "label": "Windows 11 readiness",
+          "value": "Already running Windows 11.",
+          "provenance": "Estimated",
+          "provenanceTag": "estimated"
+        }
+      ]
+    }
+  ],
+  "health": [
+    {
+      "title": "Battery health",
+      "status": "NotApplicable",
+      "statusLabel": "Not applicable",
+      "value": "No battery",
+      "detail": "No battery detected. This is normal for desktop computers.",
+      "provenance": "NotApplicable"
+    },
+    {
+      "title": "1 TB NVMe SSD health",
+      "status": "Good",
+      "statusLabel": "Good",
+      "value": "Healthy (reported)",
+      "detail": "Samsung SSD 970 EVO Plus 1TB. Windows reports this drive as healthy.",
+      "provenance": "Detected"
+    },
+    {
+      "title": "1 TB NVMe SSD power-on hours",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not available",
+      "detail": "Power-on hours were not available for this drive.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "4 TB NVMe SSD health",
+      "status": "Good",
+      "statusLabel": "Good",
+      "value": "Healthy (reported)",
+      "detail": "KINGSTON SNV2S4000G. Windows reports this drive as healthy.",
+      "provenance": "Detected"
+    },
+    {
+      "title": "4 TB NVMe SSD power-on hours",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not available",
+      "detail": "Power-on hours were not available for this drive.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "Windows activation",
+      "status": "Issue",
+      "statusLabel": "Issue",
+      "value": "Not activated",
+      "detail": "Windows is showing activation notifications.",
+      "provenance": "Detected"
+    },
+    {
+      "title": "Windows 11 compatibility",
+      "status": "Good",
+      "statusLabel": "Good",
+      "value": "Compatible (checked requirements)",
+      "detail": "Already running Windows 11.",
+      "provenance": "Estimated"
+    }
+  ],
+  "hardwareTests": [
+    {
+      "title": "Keyboard test",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not tested",
+      "detail": "Run this test from the Hardware Tests page.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "Display test",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not tested",
+      "detail": "Run this test from the Hardware Tests page.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "Speakers test",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not tested",
+      "detail": "Run this test from the Hardware Tests page.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "Microphone test",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not tested",
+      "detail": "Run this test from the Hardware Tests page.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "Webcam test",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not tested",
+      "detail": "Run this test from the Hardware Tests page.",
+      "provenance": "Unavailable"
+    },
+    {
+      "title": "Connectivity test",
+      "status": "Unknown",
+      "statusLabel": "Unavailable",
+      "value": "Not tested",
+      "detail": "Run this test from the Hardware Tests page.",
+      "provenance": "Unavailable"
+    }
+  ],
+  "sellerCondition": [
+    {
+      "label": "Condition",
+      "value": "Not provided by the seller",
+      "provenance": "Unavailable",
+      "provenanceTag": "unavailable"
+    }
+  ],
+  "knownIssues": [],
+  "notices": [],
+  "disclaimer": "Specifications were collected from the device by SellSpec at the time shown. Physical condition, included items and some test results were supplied by the seller and have not been independently verified. Battery and storage health figures are values reported by the device and are estimates, not guarantees. This report is not a certification and is not tamper-proof.",
+  "isDemoData": false
+}

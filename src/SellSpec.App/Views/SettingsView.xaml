@@ -1,0 +1,81 @@
+<UserControl x:Class="SellSpec.App.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:SellSpec.App.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance Type=vm:SettingsViewModel}">
+  <UserControl.Resources>
+    <Style x:Key="SettingRow" TargetType="Grid">
+      <Setter Property="Margin" Value="0,0,0,14" />
+    </Style>
+  </UserControl.Resources>
+  <ScrollViewer>
+    <StackPanel Margin="{StaticResource PagePadding}" MaxWidth="820" HorizontalAlignment="Left">
+      <TextBlock Text="Settings" Style="{StaticResource PageTitle}" />
+      <TextBlock Text="Changes are saved immediately." Style="{StaticResource PageSubtitle}" />
+
+      <TextBlock Text="Appearance" Style="{StaticResource SectionHeaderText}" />
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <TextBlock Text="Theme" FontWeight="SemiBold" Margin="0,0,0,8" />
+          <WrapPanel>
+            <RadioButton Style="{StaticResource ChoiceChip}" GroupName="theme" Content="Follow Windows" IsChecked="{Binding Theme, Converter={StaticResource EnumToBool}, ConverterParameter=System}" />
+            <RadioButton Style="{StaticResource ChoiceChip}" GroupName="theme" Content="Light" IsChecked="{Binding Theme, Converter={StaticResource EnumToBool}, ConverterParameter=Light}" />
+            <RadioButton Style="{StaticResource ChoiceChip}" GroupName="theme" Content="Dark" IsChecked="{Binding Theme, Converter={StaticResource EnumToBool}, ConverterParameter=Dark}" />
+          </WrapPanel>
+          <CheckBox Content="Show where each value came from (Detected, Firmware reported, Estimated…) on the Specifications page" IsChecked="{Binding ShowProvenanceLabels}" Margin="0,8,0,0" />
+        </StackPanel>
+      </Border>
+
+      <TextBlock Text="Listings" Style="{StaticResource SectionHeaderText}" Margin="0,20,0,8" />
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <Grid Style="{StaticResource SettingRow}">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="260" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <TextBlock Text="Default marketplace" VerticalAlignment="Center" />
+            <ComboBox Grid.Column="1" ItemsSource="{Binding Marketplaces}" SelectedItem="{Binding DefaultMarketplace}" HorizontalAlignment="Left" Width="220" />
+          </Grid>
+          <Grid Style="{StaticResource SettingRow}">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="260" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <TextBlock Text="eBay title limit (characters)" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding EbayTitleLimit, UpdateSourceTrigger=LostFocus}" Width="90" HorizontalAlignment="Left" AutomationProperties.Name="eBay title limit" />
+          </Grid>
+          <Grid Style="{StaticResource SettingRow}">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="260" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <TextBlock Text="Facebook Marketplace title limit" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding FacebookTitleLimit, UpdateSourceTrigger=LostFocus}" Width="90" HorizontalAlignment="Left" AutomationProperties.Name="Facebook title limit" />
+          </Grid>
+          <Grid Style="{StaticResource SettingRow}">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="260" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <TextBlock Text="Gumtree title limit" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding GumtreeTitleLimit, UpdateSourceTrigger=LostFocus}" Width="90" HorizontalAlignment="Left" AutomationProperties.Name="Gumtree title limit" />
+          </Grid>
+          <Grid Style="{StaticResource SettingRow}">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="260" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <TextBlock Text="Currency symbol for asking price" VerticalAlignment="Center" />
+            <TextBox Grid.Column="1" Text="{Binding CurrencySymbol, UpdateSourceTrigger=LostFocus}" Width="90" HorizontalAlignment="Left" AutomationProperties.Name="Currency symbol" />
+          </Grid>
+          <CheckBox Content="Include reported battery health in listings" IsChecked="{Binding IncludeBatteryHealth}" Margin="0,0,0,8" />
+          <CheckBox Content="Mention Windows activation status in listings" IsChecked="{Binding IncludeWindowsActivation}" Margin="0,0,0,8" />
+          <CheckBox Content="Add a short 'Listing prepared with SellSpec' line" IsChecked="{Binding IncludeSellSpecFooter}" />
+        </StackPanel>
+      </Border>
+
+      <TextBlock Text="Diagnostics and storage" Style="{StaticResource SectionHeaderText}" Margin="0,20,0,8" />
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <CheckBox Content="Keep a local diagnostic log (no serial numbers, addresses or personal data; last 7 days)" IsChecked="{Binding EnableDiagnosticLogging}" Margin="0,0,0,12" />
+          <TextBlock Text="{Binding StorageModeLabel}" Style="{StaticResource SecondaryText}" />
+          <TextBlock Text="{Binding DataFolder}" Style="{StaticResource CaptionText}" FontFamily="{StaticResource FontMono}" Margin="0,4,0,10" />
+          <WrapPanel>
+            <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" Margin="0,0,8,8" />
+            <Button Content="Open log folder" Command="{Binding OpenLogFolderCommand}" Margin="0,0,8,8" />
+            <Button Content="Reset to defaults" Style="{StaticResource SubtleButton}" Command="{Binding ResetDefaultsCommand}" Margin="0,0,8,8" />
+          </WrapPanel>
+          <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}" Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>
