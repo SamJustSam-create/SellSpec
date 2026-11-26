@@ -47,7 +47,7 @@ Notes on memory: the working set includes the shared WPF and .NET runtime pages;
 
 ### Release artifacts
 
-Published by the release workflow on 2026-11-27 for v0.1.2-alpha (Release, win-x64, all tests passing first; sizes from the GitHub release assets):
+Sizes of the v0.1.2-alpha assets as published on GitHub Releases by the release workflow (Release, win-x64, all tests passing first):
 
 | Artifact | Size | Runtime requirement |
 |---|---|---|
@@ -55,7 +55,7 @@ Published by the release workflow on 2026-11-27 for v0.1.2-alpha (Release, win-x
 | `SellSpec-0.1.2-alpha-win-x64-singlefile.exe` | **1.8 MB** | .NET Desktop Runtime 10 |
 | `SellSpec-0.1.2-alpha-win-x64-selfcontained.exe` | **61.9 MB** (compressed single file) | none |
 
-For comparison, 0.1.0-alpha measured 546 KB, 1.4 MB and 60.5 MB; the growth is the field-report and remembered-answers code plus the bundled licence and policy documents.
+For comparison, 0.1.0-alpha measured 546 KB, 1.4 MB and 60.5 MB. The executables grew with the field-report and remembered-answers code; the portable zip additionally gained the bundled licence, code signing policy and privacy policy, which are not part of either executable.
 
 Both framework-dependent artifacts are far below the 20 MB target. The self-contained build cannot meet it because WPF is not trimmable; it exists for users who do not want to install the runtime. After publishing, the self-contained executable was started in `--capture` mode from a clean launch and produced the full page set and exports. The portable executable, started the same way on this machine (which has no machine-wide .NET runtime), correctly showed the standard ".NET must be installed" prompt; with `DOTNET_ROOT` pointed at a .NET 10 runtime it ran and produced the same output, and wrote its settings and logs to the `data` folder beside the executable as portable mode requires. SHA-256 checksums are in `artifacts\SHA256SUMS.txt`. Nothing is code-signed.
 
