@@ -49,11 +49,11 @@ Every page, the dark theme and the keyboard test window are in `docs/screenshots
 
 Release artifacts are produced by `build\publish.ps1` into `artifacts\`:
 
-| Artifact | Needs | Size (0.1.0-alpha) |
+| Artifact | Needs | Size (0.1.2-alpha) |
 |---|---|---|
-| `SellSpec-<version>-win-x64-portable.zip` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) installed | 0.5 MB |
-| `SellSpec-<version>-win-x64-singlefile.exe` | .NET Desktop Runtime 10 installed | 1.4 MB |
-| `SellSpec-<version>-win-x64-selfcontained.exe` | Nothing | 60 MB (bundles the runtime; WPF cannot be trimmed) |
+| `SellSpec-<version>-win-x64-portable.zip` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) installed | 0.8 MB |
+| `SellSpec-<version>-win-x64-singlefile.exe` | .NET Desktop Runtime 10 installed | 1.8 MB |
+| `SellSpec-<version>-win-x64-selfcontained.exe` | Nothing | 62 MB (bundles the runtime; WPF cannot be trimmed) |
 
 Measured sizes for the current build are listed in [TESTING.md](TESTING.md#performance-measurements). Checksums are in `artifacts\SHA256SUMS.txt`.
 
