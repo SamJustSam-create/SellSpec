@@ -1,6 +1,6 @@
 # Code signing policy
 
-SellSpec's release executables are code-signed through [SignPath Foundation](https://signpath.org)'s free programme for open-source projects.
+SellSpec's release executables are to be code-signed through [SignPath Foundation](https://signpath.org)'s free programme for open-source projects. Signing happens only after SignPath Foundation has approved the project and the repository has been configured for it; until then every release is unsigned, and this page describes how signing will work once it is active.
 
 > Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
 
@@ -8,16 +8,18 @@ SellSpec's release executables are code-signed through [SignPath Foundation](htt
 
 ## What is signed
 
-| File | Signed |
+| File | Signed once signing is active |
 |---|---|
 | `SellSpec-<version>-win-x64-singlefile.exe` | Yes (Authenticode, SHA-256, timestamped) |
 | `SellSpec-<version>-win-x64-selfcontained.exe` | Yes (Authenticode, SHA-256, timestamped) |
 | `SellSpec.exe` inside `SellSpec-<version>-win-x64-portable.zip` | Yes (Authenticode, SHA-256, timestamped) |
 | `SellSpec-<version>-win-x64-portable.zip`, `SHA256SUMS.txt` | No. A zip cannot carry an Authenticode signature; `SHA256SUMS.txt` covers every asset. |
 
-The certificate is issued to SignPath Foundation, so Windows shows **SignPath Foundation** as the publisher. The signature confirms that the file is an unmodified, automated build of the source code in this repository, including its build scripts and workflow, at the tagged commit.
+The certificate is issued to SignPath Foundation, so Windows will show **SignPath Foundation** as the publisher. A signature confirms that the file is an unmodified, automated build of the source code in this repository, including its build scripts and workflow, at the tagged commit.
 
 ## How a release is built and signed
+
+Steps 3 to 5 run only once signing is active (project approved, repository configured). Until then a release goes straight from step 2 to step 6 and its notes say the executables are unsigned.
 
 1. A maintainer tags a reviewed commit on `main` with `v<major>.<minor>.<patch>[-<suffix>]`, equal to the version in `Directory.Build.props`.
 2. The [release workflow](.github/workflows/release.yml) runs on GitHub-hosted runners only. It refuses tags that are malformed, do not match the project version, or are not on `main`; then it builds from source, runs the full test suite and publishes the artifacts with `build/publish.ps1`.
