@@ -1,0 +1,22 @@
+# Normalise text files; keep binary assets untouched so PDFs and images survive checkout on every platform.
+* text=auto
+
+*.cs text
+*.xaml text
+*.csproj text
+*.slnx text
+*.props text
+*.json text
+*.md text
+*.ps1 text
+*.manifest text
+*.editorconfig text
+
+*.pdf binary
+*.png binary
+*.ico binary
+*.jpg binary
+*.jpeg binary
+*.zip binary
+*.exe binary
+*.dll binary
