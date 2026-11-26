@@ -8,6 +8,12 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 - Settings → *Report a detection problem*: saves a diagnostics bundle (public JSON report, raw detection dump with firmware strings, codes, provenance and notes, scan issues, today's sanitised log, optional description) as a zip for attaching to a GitHub report. Every entry is redaction-checked; identifiers are never included. A button opens the GitHub issue form, the only web address SellSpec ever opens.
 - "Something wrong? Report a detection problem" link on the Overview page.
 - GitHub issue forms for detection reports and bug reports, with links to the detection methods and known limitations.
+- MIT licence (`LICENSE`). Contributions are accepted under the same licence; the About page and assembly metadata name it.
+- Code signing policy (`CODE_SIGNING_POLICY.md`) and SignPath Foundation signing in the release workflow: `build/signing.ps1` stages the executables under fixed names, the SignPath action submits them with origin verification and waits for manual approval, and the script verifies every returned file (valid, timestamped, signed by SignPath Foundation) before replacing the executables and rebuilding the zip and checksums. The steps run only when the SignPath repository variables are set and fail the release on any signing error.
+
+### Changed
+- Release notes state whether the executables are signed and link the code signing policy.
+- The commercial-licensing roadmap item was dropped: SellSpec is open source for good.
 
 ### Fixed
 - The export redaction check no longer flags the sanitiser's own `C:\Users\[user]` placeholder as a leak.

@@ -20,7 +20,7 @@
     <Product>SellSpec</Product>
     <Company>SellSpec</Company>
     <Authors>SellSpec</Authors>
-    <Copyright>Copyright © 2026 SellSpec. All rights reserved.</Copyright>
+    <Copyright>Copyright © 2026 SellSpec contributors. MIT Licence.</Copyright>
     <Description>Scan it. List it. Sell it. Device specification scanner and marketplace listing generator.</Description>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
