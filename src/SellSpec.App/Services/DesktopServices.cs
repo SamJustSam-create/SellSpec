@@ -112,10 +112,13 @@ public sealed class ExportService
     }
 }
 
-/// <summary>Opens a fixed set of Windows URIs and folders. Nothing user-supplied is ever passed to the shell.</summary>
+/// <summary>Opens a fixed set of Windows URIs, folders and the project's issue tracker. Nothing user-supplied is ever passed to the shell.</summary>
 public static class ExternalLauncher
 {
-    private static readonly string[] AllowedPrefixes = { "ms-settings:", "microsoft.windows.camera:" };
+    /// <summary>The only web address SellSpec ever opens, and only when the user presses the button for it.</summary>
+    public const string IssueTrackerUrl = "https://github.com/SamJustSam-create/SellSpec/issues/new/choose";
+
+    private static readonly string[] AllowedPrefixes = { "ms-settings:", "microsoft.windows.camera:", IssueTrackerUrl };
 
     public static bool OpenUri(string uri)
     {

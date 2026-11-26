@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How SellSpec reads each value
+    url: https://github.com/SamJustSam-create/SellSpec/blob/main/docs/HARDWARE_DETECTION.md
+    about: Check how a value is detected and its known weak spots before reporting.
+  - name: Known limitations
+    url: https://github.com/SamJustSam-create/SellSpec/blob/main/KNOWN_LIMITATIONS.md
+    about: What is partial, estimated or not implemented yet.

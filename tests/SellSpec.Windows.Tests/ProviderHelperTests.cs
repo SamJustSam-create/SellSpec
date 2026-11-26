@@ -98,6 +98,25 @@ public sealed class ProviderHelperTests
         Assert.Equal(expected, WindowsDeviceIdentityProvider.LooksLikeCode(value));
     }
 
+    [Theory]
+    [InlineData("Intel(R) Wireless Bluetooth(R)", true)]
+    [InlineData("Realtek Bluetooth Adapter", true)]
+    [InlineData("MediaTek Bluetooth Adapter", true)]
+    [InlineData("Qualcomm FastConnect 6900 Bluetooth Adapter", true)]
+    [InlineData("Microsoft Bluetooth Enumerator", false)]
+    [InlineData("Microsoft Bluetooth LE Enumerator", false)]
+    [InlineData("Bluetooth Device (RFCOMM Protocol TDI)", false)]
+    [InlineData("Sam's AirPods", false)]
+    [InlineData("Sam’s AirPods Pro", false)]
+    [InlineData("Galaxy Buds2", false)]
+    [InlineData("JBL Bluetooth Speaker", false)]
+    [InlineData("Xbox Wireless Controller", false)]
+    [InlineData("Logitech MX Keys", false)]
+    public void Bluetooth_radio_names_exclude_paired_devices(string name, bool expected)
+    {
+        Assert.Equal(expected, WindowsConnectivityProvider.IsBluetoothRadioName(name));
+    }
+
     [Fact]
     public void Usable_memory_rounds_up_to_module_size()
     {

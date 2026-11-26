@@ -61,6 +61,9 @@ public sealed partial class OverviewViewModel : ObservableObject
     [RelayCommand]
     private void OpenHealth() => _shell.Navigate("health");
 
+    [RelayCommand]
+    private void OpenDiagnostics() => _shell.Navigate("settings");
+
     private void Refresh()
     {
         var result = _shell.Session.ScanResult;

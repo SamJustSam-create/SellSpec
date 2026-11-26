@@ -145,6 +145,11 @@ public sealed class LogSanitiserTests
         Assert.Contains("[ip]", clean);
         Assert.Contains("[user]", clean);
         Assert.Contains("[guid]", clean);
+
+        var v6 = LogSanitiser.Sanitise("link fe80::1a2b:3c4d:5e6f:7a8b and 2001:db8:85a3:0:0:8a2e:370:7334 at 16:55:22.912");
+        Assert.DoesNotContain("fe80", v6);
+        Assert.DoesNotContain("8a2e", v6);
+        Assert.Contains("16:55:22.912", v6);
     }
 
     [Fact]

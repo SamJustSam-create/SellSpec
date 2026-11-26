@@ -83,6 +83,7 @@ public static partial class LogSanitiser
 
         result = MacAddress().Replace(result, "[mac]");
         result = Ipv4Address().Replace(result, "[ip]");
+        result = Privacy.Redactor.Ipv6Pattern.Replace(result, "[ip]");
         result = Guid().Replace(result, "[guid]");
         result = UserProfilePath().Replace(result, "$1[user]");
         return result;

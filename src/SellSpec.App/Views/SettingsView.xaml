@@ -76,6 +76,26 @@
           <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}" Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}" />
         </StackPanel>
       </Border>
+
+      <TextBlock Text="Report a detection problem" Style="{StaticResource SectionHeaderText}" Margin="0,20,0,8" />
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <TextBlock Style="{StaticResource SecondaryText}" Text="If SellSpec got a specification wrong or missing, save a diagnostics bundle and attach it to a report on GitHub. The bundle holds the public report, the raw firmware strings and codes behind every value, the scan notes and today's sanitised log. It never contains serial numbers, addresses, user names or personal files, and every file is checked before it is written." />
+          <TextBlock Text="What was wrong, and what should it have said? (optional)" FontWeight="SemiBold" Margin="0,12,0,6" />
+          <TextBox Text="{Binding DiagnosticsNotes, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MultilineTextBox}" MinHeight="64" AutomationProperties.Name="Detection problem description"
+                   ToolTip="e.g. 'Shows 14-inch, the panel is 13.3-inch' or 'Memory type blank; it is DDR5'. Do not include serial numbers." />
+          <WrapPanel Margin="0,12,0,0">
+            <Button Style="{StaticResource AccentButton}" Command="{Binding SaveDiagnosticsBundleCommand}" IsEnabled="{Binding CanSaveDiagnostics}" Margin="0,0,8,8">
+              <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE74E;" Style="{StaticResource IconText}" FontSize="14" Margin="0,0,8,0" Foreground="{DynamicResource TextOnAccentBrush}" /><TextBlock Text="Save diagnostics bundle…" /></StackPanel>
+            </Button>
+            <Button Command="{Binding OpenIssueTrackerCommand}" Margin="0,0,8,8" ToolTip="{Binding IssueTrackerUrl}">
+              <StackPanel Orientation="Horizontal"><TextBlock Text="&#xE8A7;" Style="{StaticResource IconText}" FontSize="14" Margin="0,0,8,0" /><TextBlock Text="Open the report form on GitHub" /></StackPanel>
+            </Button>
+          </WrapPanel>
+          <TextBlock Text="{Binding DiagnosticsStatus}" Style="{StaticResource CaptionText}" Visibility="{Binding DiagnosticsStatus, Converter={StaticResource StringToVisibility}}" />
+          <TextBlock Text="Opening the report form is the only time SellSpec opens a web address, and only when you press the button." Style="{StaticResource CaptionText}" Margin="0,6,0,0" />
+        </StackPanel>
+      </Border>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

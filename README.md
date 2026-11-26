@@ -71,6 +71,10 @@ If a file named `portable.txt` sits next to `SellSpec.exe` (the zip includes one
 | `--capture <folder>` | Developer: scan, render every page (light and dark) and the keyboard test window to PNG, write sample exports in every format, then exit |
 | `--elevated-rescan` | Used internally when the user chooses *Rescan as administrator* |
 
+## Reporting a wrong value
+
+Hardware detection accuracy is the heart of SellSpec, and OEM firmware is inventive. If a value is wrong or missing, use Settings → *Report a detection problem* to save a diagnostics bundle (public report, raw firmware strings and codes, scan notes, sanitised log; never identifiers) and attach it to a [detection report](https://github.com/SamJustSam-create/SellSpec/issues/new/choose). See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Building from source
 
 ```powershell

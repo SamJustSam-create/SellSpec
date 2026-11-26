@@ -214,6 +214,37 @@ public sealed class RedactorTests
         Assert.Empty(Redactor.FindLeaks("Windows 11 Home 24H2 (build 26100.4061) version 10.0.26200", ids));
         Assert.Empty(Redactor.FindLeaks("Driver 31.0.101.5186", ids));
         Assert.Empty(Redactor.FindLeaks("Intel Core i5-1335U, 16 GB RAM, 512 GB NVMe SSD, 1920x1080", ids));
+        Assert.Empty(Redactor.FindLeaks("2026-11-26 16:55:22.912 [Info] Scan: Scan started.", ids));
+        Assert.Empty(Redactor.FindLeaks(@"C:\Users\[user]\Documents", ids));
+    }
+
+    [Theory]
+    [InlineData("addr 2001:db8:85a3:0:0:8a2e:370:7334 end")]
+    [InlineData("link fe80::1a2b:3c4d:5e6f:7a8b%12")]
+    [InlineData("loopback ::1 here")]
+    [InlineData("prefix 2001:db8::")]
+    public void Detects_ipv6_addresses(string text)
+    {
+        Assert.Contains("IPv6 address", Redactor.FindLeaks(text, Scenarios.PrivateIds));
+    }
+
+    [Fact]
+    public void Short_private_values_are_matched_as_whole_tokens()
+    {
+        var ids = new PrivateIdentifiers { SystemSerialNumber = "AB12" };
+        Assert.Contains("private identifier", Redactor.FindLeaks("tag AB12 end", ids));
+        Assert.Empty(Redactor.FindLeaks("model XAB12Y end", ids));
+    }
+
+    [Fact]
+    public void Additional_terms_are_matched_as_whole_words_and_generic_names_ignored()
+    {
+        var ids = Scenarios.PrivateIds;
+        Assert.Contains("account or computer name", Redactor.FindLeaks("hello from sam", ids, new[] { "sam" }));
+        Assert.Empty(Redactor.FindLeaks("Samsung SSD 970", ids, new[] { "sam" }));
+        Assert.Empty(Redactor.FindLeaks("the user pressed save", ids, new[] { "user" }));
+        Assert.Contains("account or computer name", Redactor.FindLeaks("on DESKTOP-ABC123 today", ids, new[] { "DESKTOP-ABC123" }));
+        Assert.Equal("hi [redacted], from [redacted]", Redactor.ReplaceTerms("hi sam, from DESKTOP-ABC123", new[] { "sam", "DESKTOP-ABC123" }));
     }
 
     [Fact]

@@ -94,7 +94,7 @@ public sealed partial class WindowsConnectivityProvider : IConnectivityProvider
         var bluetoothDevices = pnp.Where(r => string.Equals(r.GetString("PNPClass"), "Bluetooth", StringComparison.OrdinalIgnoreCase)).ToList();
         var bluetoothRadios = bluetoothDevices
             .Select(r => r.GetString("Name"))
-            .Where(n => n is not null && !BluetoothNonRadio().IsMatch(n))
+            .Where(n => n is not null && IsBluetoothRadioName(n))
             .Select(n => n!)
             .Distinct()
             .ToList();
@@ -143,7 +143,18 @@ public sealed partial class WindowsConnectivityProvider : IConnectivityProvider
     [GeneratedRegex(@"Wi-?Fi|Wireless|802\.11|WLAN|\bAX\d{3,4}\b|\bBE\d{3}\b|\bAC\s?\d{3,4}\b|Dual Band|Tri Band", RegexOptions.IgnoreCase)]
     private static partial Regex WifiName();
 
-    [GeneratedRegex(@"Enumerator|RFCOMM|Personal Area|LE Generic|Service|Transport|Device Information|Protocol|Audio Sink|Audio Source|Hands-Free|Avrcp|HID|Keyboard|Mouse|Headset|Headphones|Speaker|Earbuds|Controller$|Gamepad|Pen|Watch|Phone", RegexOptions.IgnoreCase)]
+    /// <summary>
+    /// Only hardware radio names are kept. Paired devices also appear under the Bluetooth PnP class and carry
+    /// user-assigned names ("Sam's AirPods"), which must never reach a report or a diagnostics bundle, so a name
+    /// has to look like a radio (positive match) and not like a peripheral or protocol entry (negative match).
+    /// </summary>
+    internal static bool IsBluetoothRadioName(string name) =>
+        BluetoothRadioName().IsMatch(name) && !BluetoothNonRadio().IsMatch(name);
+
+    [GeneratedRegex(@"Bluetooth|\bBT\b|Radio|Wireless Adapter", RegexOptions.IgnoreCase)]
+    private static partial Regex BluetoothRadioName();
+
+    [GeneratedRegex(@"Enumerator|RFCOMM|Personal Area|LE Generic|Service|Transport|Device Information|Protocol|Audio Sink|Audio Source|Hands-Free|Avrcp|HID|Keyboard|Mouse|Headset|Headphones|Speaker|Earbuds|Buds|Controller$|Gamepad|Pen\b|Watch|Phone|'s\b|’s\b", RegexOptions.IgnoreCase)]
     private static partial Regex BluetoothNonRadio();
 
     [GeneratedRegex(@"camera|webcam|\bcam\b|imaging", RegexOptions.IgnoreCase)]
