@@ -132,12 +132,15 @@ public sealed class LogSanitiserTests
     [Fact]
     public void Removes_network_identifiers_and_user_paths()
     {
-        var text = "adapter 00:1A:2B:3C:4D:5E at 192.168.1.20 for C:\\Users\\sam\\Documents id 6ab35c0e-1a1f-4e92-9f0f-3b2b6b9a6a01";
+        // The GUID must not be one of the fixture identifiers: scanner tests register those as private values
+        // in the (static) sanitiser, and test classes run in no fixed order, so a shared GUID would be replaced
+        // with "[redacted]" instead of "[guid]" depending on scheduling.
+        var text = "adapter 00:1A:2B:3C:4D:5E at 192.168.1.20 for C:\\Users\\sam\\Documents id 0f1e2d3c-4b5a-4978-8a6b-5c4d3e2f1a0b";
         var clean = LogSanitiser.Sanitise(text);
         Assert.DoesNotContain("00:1A", clean);
         Assert.DoesNotContain("192.168", clean);
         Assert.DoesNotContain("\\sam\\", clean);
-        Assert.DoesNotContain("6ab35c0e", clean);
+        Assert.DoesNotContain("0f1e2d3c", clean);
         Assert.Contains("[mac]", clean);
         Assert.Contains("[ip]", clean);
         Assert.Contains("[user]", clean);
