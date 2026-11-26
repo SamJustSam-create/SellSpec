@@ -52,14 +52,16 @@ body:
   - type: textarea
     id: raw
     attributes:
-      label: Raw strings (optional if you attach the bundle)
-      description: On the Specifications page tick *Show technical details* and paste the relevant raw values (raw manufacturer/model/version, raw processor or graphics names, chassis codes, EDID codes).
+      label: Raw strings (optional extra)
+      description: The bundle already contains these. If something specific stood out, paste it here from the Specifications page with *Show technical details* ticked (raw manufacturer/model/version, raw processor or graphics names, chassis codes, EDID codes).
       render: text
   - type: checkboxes
     id: bundle
     attributes:
       label: Diagnostics bundle
+      description: The bundle is required; it is how a detection problem gets fixed. If SellSpec cannot produce one (for example it crashes first), file a Bug report instead.
       options:
         - label: I have attached the diagnostics bundle (.zip) saved from Settings → Report a detection problem
+          required: true
         - label: I confirm the report contains no serial numbers, service tags or other identifiers
           required: true

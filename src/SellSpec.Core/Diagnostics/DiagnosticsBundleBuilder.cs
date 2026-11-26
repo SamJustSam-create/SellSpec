@@ -10,11 +10,17 @@ using SellSpec.Core.Testing;
 
 namespace SellSpec.Core.Diagnostics;
 
+/// <param name="SensitiveTerms">
+/// Extra terms that must never appear in the bundle, such as the Windows account name and the computer name.
+/// They are replaced in the log and cause the user's notes to be refused.
+/// </param>
 public sealed record DiagnosticsBundleRequest(
     ScanResult ScanResult,
     string ApplicationVersion,
     string? LogText = null,
-    string? UserNotes = null);
+    string? UserNotes = null,
+    bool IsDemoData = false,
+    IReadOnlyList<string>? SensitiveTerms = null);
 
 /// <summary>The zip bytes plus the concatenated text of every entry, so callers can run their own redaction check.</summary>
 public sealed record DiagnosticsBundle(byte[] Zip, string CombinedText, IReadOnlyList<string> Entries);
@@ -42,7 +48,7 @@ public static class DiagnosticsBundleBuilder
         // Belt and braces: make sure the sanitiser knows every identifier from this scan before any text is produced.
         LogSanitiser.RegisterPrivateValues(s.Private.AllValues());
 
-        var report = ReportBuilder.Build(new ReportRequest(s, ConditionQuestionnaire.Empty, Array.Empty<HardwareTestResult>(), result.ScannedAt, request.ApplicationVersion));
+        var report = ReportBuilder.Build(new ReportRequest(s, ConditionQuestionnaire.Empty, Array.Empty<HardwareTestResult>(), result.ScannedAt, request.ApplicationVersion, request.IsDemoData));
 
         var parts = new List<(string Name, string Text)>
         {
@@ -53,16 +59,18 @@ public static class DiagnosticsBundleBuilder
         };
         if (!string.IsNullOrWhiteSpace(request.LogText))
         {
-            parts.Add((LogEntry, LogSanitiser.Sanitise(request.LogText)));
+            // The log is machine-generated: sanitise it and strip the account/computer names rather than refusing.
+            parts.Add((LogEntry, Redactor.ReplaceTerms(LogSanitiser.Sanitise(request.LogText), request.SensitiveTerms)));
         }
         if (!string.IsNullOrWhiteSpace(request.UserNotes))
         {
             parts.Add((NotesEntry, request.UserNotes.Trim()));
         }
 
+        // Notes are the user's own words: refuse (with the reason) instead of silently editing them.
         foreach (var (_, text) in parts)
         {
-            Redactor.EnsureClean(text, s.Private);
+            Redactor.EnsureClean(text, s.Private, request.SensitiveTerms);
         }
 
         using var stream = new MemoryStream();
@@ -89,6 +97,11 @@ public static class DiagnosticsBundleBuilder
         sb.AppendLine($"SellSpec version: {request.ApplicationVersion}");
         sb.AppendLine($"Scanned: {request.ScanResult.ScannedAt:yyyy-MM-dd HH:mm:ss zzz}");
         sb.AppendLine($"Created: {DateTimeOffset.Now:yyyy-MM-dd HH:mm:ss zzz}");
+        if (request.IsDemoData)
+        {
+            sb.AppendLine();
+            sb.AppendLine("DEMONSTRATION DATA: this bundle was produced from SellSpec's built-in demo device, not from real hardware.");
+        }
         sb.AppendLine();
         sb.AppendLine("Contents");
         sb.AppendLine($"  {ReportEntry,-20} the public specification report, exactly as the JSON export");
@@ -120,11 +133,15 @@ public static class DiagnosticsBundleBuilder
         return sb.ToString();
     }
 
-    /// <summary>Everything the detection layer produced, with provenance, in a stable text layout.</summary>
-    public static string RawDetection(DiagnosticsBundleRequest request)
+    /// <summary>Everything the detection layer produced, with provenance, in a stable text layout. Private: only reachable through <see cref="Build"/>, which redaction-checks it.</summary>
+    private static string RawDetection(DiagnosticsBundleRequest request)
     {
         var s = request.ScanResult.Snapshot;
         var sb = new StringBuilder();
+        if (request.IsDemoData)
+        {
+            sb.AppendLine("# DEMONSTRATION DATA (SellSpec demo device, not real hardware)");
+        }
         void H(string title) { sb.AppendLine(); sb.AppendLine($"## {title}"); }
         void L(string label, string? value) => sb.AppendLine($"{label,-28} {value ?? "-"}");
         string F<T>(Spec<T> spec) => spec.HasValue

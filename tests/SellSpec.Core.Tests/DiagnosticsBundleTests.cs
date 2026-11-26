@@ -84,6 +84,32 @@ public sealed class DiagnosticsBundleTests
     }
 
     [Fact]
+    public void Demo_bundles_are_labelled_as_demonstration_data()
+    {
+        var bundle = DiagnosticsBundleBuilder.Build(new DiagnosticsBundleRequest(Result(Demo.DemoDeviceFactory.CreateLaptop()), "0.1.1-test", IsDemoData: true));
+        var entries = Unzip(bundle.Zip);
+        Assert.Contains("DEMONSTRATION DATA", entries["README.txt"]);
+        Assert.Contains("DEMONSTRATION DATA", entries["raw-detection.txt"]);
+        Assert.Contains("DEMONSTRATION DATA", entries["report.json"]);
+    }
+
+    [Fact]
+    public void Account_and_machine_names_are_stripped_from_logs_and_refused_in_notes()
+    {
+        var snapshot = Scenarios.StandardLaptop();
+        var terms = new[] { "samuel", "DESKTOP-ABC123" };
+        var ok = DiagnosticsBundleBuilder.Build(new DiagnosticsBundleRequest(Result(snapshot), "0.1.1-test", "samuel started scan on DESKTOP-ABC123", null, false, terms));
+        var log = Unzip(ok.Zip)["log.txt"];
+        Assert.DoesNotContain("samuel", log);
+        Assert.DoesNotContain("DESKTOP-ABC123", log);
+        Assert.Contains("[redacted]", log);
+
+        var ex = Assert.Throws<RedactionException>(() =>
+            DiagnosticsBundleBuilder.Build(new DiagnosticsBundleRequest(Result(snapshot), "0.1.1-test", null, "it happened on DESKTOP-ABC123", false, terms)));
+        Assert.Contains("account or computer name", ex.Findings);
+    }
+
+    [Fact]
     public void User_notes_containing_a_serial_are_refused()
     {
         var snapshot = Scenarios.StandardLaptop();

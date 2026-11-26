@@ -11,6 +11,8 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 
 ### Fixed
 - The export redaction check no longer flags the sanitiser's own `C:\Users\[user]` placeholder as a leak.
+- Redaction now also catches IPv6 addresses, short private identifiers as whole tokens, and the Windows account and computer names in diagnostics bundles.
+- Bluetooth device names in the Specifications page and diagnostics bundles are limited to hardware radios; paired devices with personal names are excluded.
 
 ## [0.1.1-alpha] – 2026-11-26
 

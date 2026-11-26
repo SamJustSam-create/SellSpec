@@ -60,7 +60,14 @@ public sealed partial class SettingsViewModel : ObservableObject
         {
             if (e.PropertyName == nameof(AppSession.ScanResult)) OnPropertyChanged(nameof(CanSaveDiagnostics));
         };
+        shell.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(ShellViewModel.IsScanning)) OnPropertyChanged(nameof(CanSaveDiagnostics));
+        };
     }
+
+    /// <summary>Only the tail of a large log is included, read off the UI thread.</summary>
+    private const int MaxLogBytes = 256 * 1024;
 
     public ObservableCollection<MarketplaceOption> Marketplaces { get; }
     public string DataFolder => _shell.Paths.DataDirectory;
@@ -85,7 +92,8 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _diagnosticsNotes = string.Empty;
     [ObservableProperty] private string? _diagnosticsStatus;
 
-    public bool CanSaveDiagnostics => _shell.Session.ScanResult is not null;
+    /// <summary>Disabled while a rescan runs so the bundle's scan result and log always describe the same scan.</summary>
+    public bool CanSaveDiagnostics => _shell.Session.ScanResult is not null && !_shell.IsScanning;
     public string IssueTrackerUrl => ExternalLauncher.IssueTrackerUrl;
 
     private void Load(AppSettings s)
@@ -113,34 +121,28 @@ public sealed partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void SaveDiagnosticsBundle()
+    private async Task SaveDiagnosticsBundleAsync()
     {
         var result = _shell.Session.ScanResult;
-        if (result is null)
+        if (result is null || _shell.IsScanning)
         {
-            DiagnosticsStatus = "Scan the device first.";
+            DiagnosticsStatus = _shell.IsScanning ? "Wait for the scan to finish." : "Scan the device first.";
             return;
         }
 
-        string? logText = null;
-        if (_shell.Logger is FileScanLogger { CurrentFile: { } logFile } && System.IO.File.Exists(logFile))
-        {
-            try
-            {
-                using var stream = new System.IO.FileStream(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
-                using var reader = new System.IO.StreamReader(stream);
-                logText = reader.ReadToEnd();
-            }
-            catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
-            {
-                logText = null;
-            }
-        }
+        var logFile = _shell.Logger is FileScanLogger { CurrentFile: { } f } ? f : null;
+        var notes = DiagnosticsNotes;
+        var isDemo = _shell.Session.IsDemo;
+        var sensitiveTerms = new[] { Environment.UserName, Environment.MachineName };
 
         Core.Diagnostics.DiagnosticsBundle bundle;
         try
         {
-            bundle = Core.Diagnostics.DiagnosticsBundleBuilder.Build(new Core.Diagnostics.DiagnosticsBundleRequest(result, AppInfo.Version, logText, DiagnosticsNotes));
+            bundle = await Task.Run(() =>
+            {
+                var logText = ReadLogTail(logFile);
+                return Core.Diagnostics.DiagnosticsBundleBuilder.Build(new Core.Diagnostics.DiagnosticsBundleRequest(result, AppInfo.Version, logText, notes, isDemo, sensitiveTerms));
+            });
         }
         catch (Core.Privacy.RedactionException ex)
         {
@@ -160,6 +162,32 @@ public sealed partial class SettingsViewModel : ObservableObject
         catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
         {
             DiagnosticsStatus = "The file could not be saved to that location.";
+        }
+    }
+
+    private static string? ReadLogTail(string? logFile)
+    {
+        if (logFile is null || !System.IO.File.Exists(logFile)) return null;
+        try
+        {
+            using var stream = new System.IO.FileStream(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+            if (stream.Length > MaxLogBytes)
+            {
+                stream.Seek(-MaxLogBytes, System.IO.SeekOrigin.End);
+            }
+            using var reader = new System.IO.StreamReader(stream);
+            var text = reader.ReadToEnd();
+            if (stream.Length > MaxLogBytes)
+            {
+                // Drop the partial first line and say what was cut.
+                var newline = text.IndexOf('\n');
+                text = $"[log truncated to the last {MaxLogBytes / 1024} KB]\n" + (newline >= 0 ? text[(newline + 1)..] : text);
+            }
+            return text;
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            return null;
         }
     }
 
