@@ -13,7 +13,8 @@
     portable\SellSpec.exe        <- SellSpec-<version>-win-x64-portable\SellSpec.exe
 
   -Apply takes the folder the signing service returned, checks that every staged file came back with a valid,
-  timestamped Authenticode signature from the expected signer, copies the signed files over the unsigned ones,
+  timestamped Authenticode signature whose certificate common name is exactly the expected signer, copies the
+  signed files over the unsigned ones,
   rebuilds the portable zip and regenerates SHA256SUMS.txt. A missing or unverified file is an error, so a
   release cannot silently ship half-signed.
 
@@ -21,13 +22,13 @@
   The folder build\publish.ps1 wrote to (artifacts\ by default).
 
 .PARAMETER StagingDirectory
-  -Stage: destination folder; created empty.
+  -Stage: destination folder. It must not exist yet or must be empty; the script never deletes anything there.
 
 .PARAMETER SignedDirectory
   -Apply: the folder holding the signed files in the staging layout.
 
 .PARAMETER ExpectedSigner
-  -Apply: text that must appear in the signing certificate's subject. Default "SignPath Foundation".
+  -Apply: the exact common name (CN) the signing certificate must carry. Default "SignPath Foundation".
 
 .PARAMETER SkipSignatureCheck
   -Apply: copy the files without verifying signatures. For local dry runs of the packaging steps only; the
@@ -73,7 +74,11 @@ foreach ($entry in $layout.GetEnumerator()) {
 
 if ($Stage) {
     if (-not $StagingDirectory) { throw 'StagingDirectory is required with -Stage.' }
-    if (Test-Path $StagingDirectory) { Remove-Item -Recurse -Force $StagingDirectory }
+    # Never clear a caller-supplied folder: a mistyped path must not destroy anything.
+    if (Test-Path $StagingDirectory -PathType Leaf) { throw "StagingDirectory '$StagingDirectory' is a file." }
+    if ((Test-Path $StagingDirectory) -and @(Get-ChildItem -Force $StagingDirectory).Count -gt 0) {
+        throw "StagingDirectory '$StagingDirectory' already exists and is not empty. Use a new or empty folder."
+    }
     New-Item -ItemType Directory -Force $StagingDirectory | Out-Null
     foreach ($entry in $present.GetEnumerator()) {
         $destination = Join-Path $StagingDirectory $entry.Key
@@ -117,9 +122,12 @@ foreach ($entry in $present.GetEnumerator()) {
         $failures.Add("$($entry.Key): signature status $($signature.Status) ($reason)")
         continue
     }
+    # Compare the certificate's common name exactly. A substring match would accept any publisher whose
+    # subject merely mentions the expected name somewhere.
+    $commonName = $signature.SignerCertificate.GetNameInfo([System.Security.Cryptography.X509Certificates.X509NameType]::SimpleName, $false)
     $subject = $signature.SignerCertificate.Subject
-    if ($subject -notlike "*$ExpectedSigner*") {
-        $failures.Add("$($entry.Key): signed by '$subject', expected a subject containing '$ExpectedSigner'")
+    if ($commonName -ne $ExpectedSigner) {
+        $failures.Add("$($entry.Key): signed by '$subject' (CN '$commonName'), expected CN '$ExpectedSigner'")
         continue
     }
     if (-not $signature.TimeStamperCertificate) {

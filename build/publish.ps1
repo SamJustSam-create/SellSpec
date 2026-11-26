@@ -4,7 +4,8 @@
 
 .DESCRIPTION
   Produces, under artifacts\:
-    SellSpec-<version>-win-x64-portable\          framework-dependent folder (needs .NET Desktop Runtime 10)
+    SellSpec-<version>-win-x64-portable\          framework-dependent folder (needs .NET Desktop Runtime 10), with
+                                                  README, LICENSE, third-party notices, code signing policy and privacy policy
     SellSpec-<version>-win-x64-portable.zip       the folder zipped, with portable.txt so settings stay beside the exe
     SellSpec-<version>-win-x64-singlefile.exe     framework-dependent single file (needs .NET Desktop Runtime 10)
     SellSpec-<version>-win-x64-selfcontained.exe  self-contained single file (no runtime needed, larger)
@@ -58,8 +59,10 @@ Write-Host '==> Publishing framework-dependent portable folder' -ForegroundColor
 dotnet publish $app @common --self-contained false -o $portableDir
 if ($LASTEXITCODE -ne 0) { throw 'Portable publish failed.' }
 Set-Content -Path (Join-Path $portableDir 'portable.txt') -Value 'Delete this file to store settings in %LOCALAPPDATA%\SellSpec instead of the data folder beside SellSpec.exe.' -Encoding ascii
-Copy-Item (Join-Path $root 'README.md') $portableDir
-Copy-Item (Join-Path $root 'THIRD_PARTY_NOTICES.md') $portableDir
+# Ship the licence and the documents the bundled README links to beside the executable.
+foreach ($doc in 'README.md', 'LICENSE', 'THIRD_PARTY_NOTICES.md', 'CODE_SIGNING_POLICY.md', 'PRIVACY.md') {
+    Copy-Item (Join-Path $root $doc) $portableDir
+}
 Compress-Archive -Path "$portableDir\*" -DestinationPath "$portableDir.zip" -Force
 
 # 2. Framework-dependent single file

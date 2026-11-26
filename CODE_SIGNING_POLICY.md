@@ -26,7 +26,7 @@ Steps 3 to 5 run only once signing is active (project approved, repository confi
 3. `build/signing.ps1 -Stage` copies the executables into a staging folder, which is uploaded as a workflow artifact and submitted to SignPath with origin verification: SignPath checks the repository, the commit and the workflow run before it will sign anything.
 4. An approver reviews the signing request in SignPath, checking the tag, the commit and the build, and approves it by hand. Nothing is signed automatically.
 5. `build/signing.ps1 -Apply` verifies that every file came back with a valid, timestamped signature from SignPath Foundation, replaces the unsigned executables, rebuilds the portable zip and regenerates `SHA256SUMS.txt`.
-6. A separate, minimal job attaches the assets to a draft GitHub release and publishes it only once every asset is uploaded.
+6. A separate, minimal job checks that the tag still points at the commit that was built, attaches the assets to a draft GitHub release, checks the tag again and only then publishes the release.
 
 Signing fails closed. If any step fails, no release is published. The signing steps run only when SignPath is configured for the repository; a release built without them is published unsigned and its notes say so.
 

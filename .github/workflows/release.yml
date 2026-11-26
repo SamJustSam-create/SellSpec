@@ -12,6 +12,8 @@ name: Release
 #     runs the build toolchain or third-party build actions;
 #   - the release is created as a draft and published only after every asset uploaded;
 #   - runs for the same tag are serialised so two runs cannot interleave their uploads;
+#   - the release job checks, before creating and again before publishing the release, that the tag still
+#     points at the commit that was built, so a tag moved during the run cannot attach the wrong binaries;
 #   - every action is pinned to a full commit SHA (Dependabot proposes updates).
 #
 # Code signing (CODE_SIGNING_POLICY.md; DEVELOPMENT.md, "Code signing"): when the repository variable
@@ -194,6 +196,26 @@ jobs:
       - name: List release files
         run: ls -l artifacts
 
+      # A tag moved while the build job waited for the signing approval would otherwise attach binaries built
+      # from one commit to a release that names another. Check before creating anything, and again before
+      # publishing. Annotated tags are dereferenced to the commit they point at.
+      - name: Check that the tag still points at the commit that was built
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+          BUILT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          read -r ref_type ref_sha < <(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG_NAME" --jq '.object | "\(.type) \(.sha)"')
+          if [ "$ref_type" = "tag" ]; then
+            ref_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$ref_sha" --jq '.object.sha')
+          fi
+          if [ "$ref_sha" != "$BUILT_SHA" ]; then
+            echo "::error::Tag $TAG_NAME now points at $ref_sha but the artifacts were built from $BUILT_SHA. The tag was moved during the run; nothing was published."
+            exit 1
+          fi
+          echo "Tag $TAG_NAME still points at $BUILT_SHA."
+
       # The release is created as a draft so that nothing becomes public until every asset is attached.
       - name: Create draft release with all assets
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
@@ -220,8 +242,19 @@ jobs:
             artifacts/SHA256SUMS.txt
           fail_on_unmatched_files: true
 
-      - name: Publish the release
+      - name: Re-check the tag, then publish the release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ github.ref_name }}
-        run: gh release edit "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --draft=false
+          BUILT_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          read -r ref_type ref_sha < <(gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG_NAME" --jq '.object | "\(.type) \(.sha)"')
+          if [ "$ref_type" = "tag" ]; then
+            ref_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/tags/$ref_sha" --jq '.object.sha')
+          fi
+          if [ "$ref_sha" != "$BUILT_SHA" ]; then
+            echo "::error::Tag $TAG_NAME now points at $ref_sha but the artifacts were built from $BUILT_SHA. The tag was moved during the run; the draft release was left unpublished."
+            exit 1
+          fi
+          gh release edit "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --draft=false

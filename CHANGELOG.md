@@ -13,6 +13,8 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 
 ### Changed
 - Release notes state whether the executables are signed and link the code signing policy.
+- The release job checks that the tag still points at the commit that was built, before creating and again before publishing the release.
+- The portable zip now ships `LICENSE`, `CODE_SIGNING_POLICY.md` and `PRIVACY.md` beside the README.
 - The commercial-licensing roadmap item was dropped: SellSpec is open source for good.
 
 ### Fixed

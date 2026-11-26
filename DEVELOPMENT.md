@@ -97,8 +97,8 @@ How the workflow signs when it is configured:
 1. `build/publish.ps1` produces the artifacts as usual.
 2. `build/signing.ps1 -Stage` copies the executables into `signing/unsigned` under fixed names (`SellSpec-singlefile.exe`, `SellSpec-selfcontained.exe`, `portable\SellSpec.exe`), and the workflow uploads that folder as a GitHub Actions artifact.
 3. `signpath/github-action-submit-signing-request` submits the artifact. The signing policy requires manual approval, so the step waits (up to an hour) for an approver to approve the request in SignPath.
-4. `build/signing.ps1 -Apply` verifies that every staged file came back with a valid, timestamped signature whose certificate subject contains "SignPath Foundation", copies the signed files over the unsigned ones, rebuilds the portable zip and regenerates `SHA256SUMS.txt`.
-5. The release notes state that the executables are signed and carry the SignPath attribution.
+4. `build/signing.ps1 -Apply` verifies that every staged file came back with a valid, timestamped signature whose certificate common name is exactly "SignPath Foundation", copies the signed files over the unsigned ones, rebuilds the portable zip and regenerates `SHA256SUMS.txt`.
+5. The release job checks that the tag still points at the commit that was built (before creating the draft and again before publishing), then publishes. The release notes state that the executables are signed and carry the SignPath attribution.
 
 The steps run only when the repository variable `SIGNPATH_ORGANIZATION_ID` is set. Without it (so also before SignPath Foundation has approved the project) the release is published unsigned and its notes say so. With it set, any signing failure fails the run: a half-signed or accidentally unsigned release cannot be published.
 
@@ -137,6 +137,7 @@ SignPath project settings the workflow relies on:
   ```
 
 - A signing policy for releases with the approval process enabled; the approvers are the people listed in CODE_SIGNING_POLICY.md. The product name in every executable is `SellSpec` (`Directory.Build.props`), which SignPath may require the configuration to enforce.
+- `signing.ps1 -Apply` requires the certificate's common name to be exactly `SignPath Foundation`. If the certificate SignPath issues carries a different common name, the first signed release fails closed with a message naming the actual CN; pass `-ExpectedSigner '<that CN>'` in the workflow step rather than loosening the check.
 
 Verifying a release on any Windows PC:
 
