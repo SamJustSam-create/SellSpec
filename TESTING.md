@@ -75,4 +75,13 @@ Items the development environment could not exercise automatically. The full che
 - The application launches, scans real hardware, renders every page in light and dark themes (captured to PNG), and writes PDF/PNG/text/JSON reports and listings for all four marketplaces, with redaction checks passing on real data.
 - The keyboard test window layout (rendered), the PDF structure (parsed back), the PNG dimensions.
 
-Not verified here because the machine has no battery, built-in display, touch digitizer or fingerprint reader: those code paths are covered by unit tests with fixtures only.
+Not verified on the development machine because it has no battery, built-in display, touch digitizer or fingerprint reader: those code paths are covered by unit tests with fixtures.
+
+## Manual verification log
+
+| Date | Device | Windows | Result |
+|---|---|---|---|
+| 2026-11-25 | Custom-built desktop: Gigabyte B550M K, Ryzen 5 5600, RX 7700 XT, 2× NVMe | 11 Pro 25H2 | Automated integration tests and `--capture` run passed; see "Performance measurements" |
+| 2026-11-26 | Laptop hardware (models to be recorded) | — | Owner ran `docs/MANUAL_TEST_CHECKLIST.md` and reported every item passing |
+
+Add a row for every device tested, with the model name from the Overview page and the Windows version from Settings → System → About.

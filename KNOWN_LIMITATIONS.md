@@ -39,4 +39,4 @@ Honest list of what is partial, estimated or not implemented in 0.1.0-alpha. Ite
 
 ## Verified so far
 
-Real-hardware verification has been performed on one custom-built desktop (Gigabyte B550M K, Ryzen 5 5600, RX 7700 XT, Windows 11 Pro 25H2). Laptop-specific paths (battery, built-in display, touch, fingerprint) are covered by unit tests with fixtures but have not yet been run on a physical laptop. See TESTING.md.
+Real-hardware verification: automated integration tests and the capture run on one custom-built desktop (Gigabyte B550M K, Ryzen 5 5600, RX 7700 XT, Windows 11 Pro 25H2), and the manual checklist on laptop hardware on 2026-11-26, reported by the owner as passing in full (device models still to be recorded in TESTING.md). Coverage of specific OEM naming quirks grows with each device added to the verification log in TESTING.md.
