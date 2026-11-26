@@ -4,19 +4,20 @@
 
 .DESCRIPTION
   Uses WPF (PresentationCore) to rasterise the SVG, so no external tool is needed. Only the subset of SVG that the
-  logo uses is understood: <path> elements with solid or linear-gradient fills (gradientUnits="userSpaceOnUse") and
-  optional strokes, <g> elements with translate/rotate/scale transforms, fill-opacity, and a data-min-size="N"
-  attribute that leaves fine detail out of frames smaller than N px. Re-run after editing the SVG.
-
-.PARAMETER Svg
-  The master logo. Default: assets\logo.svg.
+  logo uses is understood: <path> elements with solid or linear-gradient fills (gradientUnits="userSpaceOnUse"),
+  fill-rule, fill-opacity and optional strokes; <g> elements with translate/rotate/scale transforms; and the
+  data-min-size="N" / data-max-size="N" attributes, which include an element only in frames at least / at most
+  N px wide. Both output files are written together at the end. Re-run after editing the SVG.
 
 .PARAMETER OutDir
   Where SellSpec.ico and SellSpec.png are written. Default: src\SellSpec.App\Assets.
+
+.PARAMETER Svg
+  The master logo. Default: assets\logo.svg.
 #>
 param(
-    [string]$Svg,
-    [string]$OutDir
+    [string]$OutDir,
+    [string]$Svg
 )
 $ErrorActionPreference = 'Stop'
 
@@ -94,6 +95,8 @@ function Draw-Node($svg, $context, $node, [int]$frameSize, [string]$inheritedFil
         if ($child.NodeType -ne 'Element') { continue }
         $minSize = $child.GetAttribute('data-min-size')
         if ($minSize -and [int]$minSize -gt $frameSize) { continue }
+        $maxSize = $child.GetAttribute('data-max-size')
+        if ($maxSize -and [int]$maxSize -lt $frameSize) { continue }
         $fill = if ($child.HasAttribute('fill')) { $child.GetAttribute('fill') } else { $inheritedFill }
         $opacity = if ($child.HasAttribute('fill-opacity')) { [double]$child.GetAttribute('fill-opacity') } else { $inheritedOpacity }
         switch ($child.LocalName) {
@@ -105,8 +108,9 @@ function Draw-Node($svg, $context, $node, [int]$frameSize, [string]$inheritedFil
                 if ($pushed) { $context.Pop() }
             }
             'path' {
-                # SVG fills with the nonzero rule by default; WPF's parser defaults to even-odd unless F1 is given.
-                $geometry = [System.Windows.Media.Geometry]::Parse('F1 ' + $child.GetAttribute('d'))
+                # SVG fills with the nonzero rule unless fill-rule says otherwise; WPF's parser wants F1 / F0 up front.
+                $rule = if ($child.GetAttribute('fill-rule') -eq 'evenodd') { 'F0 ' } else { 'F1 ' }
+                $geometry = [System.Windows.Media.Geometry]::Parse($rule + $child.GetAttribute('d'))
                 $pen = $null
                 if ($child.HasAttribute('stroke') -and $child.GetAttribute('stroke') -ne 'none') {
                     $width = if ($child.HasAttribute('stroke-width')) { [double]$child.GetAttribute('stroke-width') } else { 1.0 }
@@ -124,8 +128,16 @@ function Draw-Node($svg, $context, $node, [int]$frameSize, [string]$inheritedFil
 function Render-Frame($svg, [int]$size) {
     $visual = New-Object System.Windows.Media.DrawingVisual
     $context = $visual.RenderOpen()
-    $scale = $size / $svg.ViewBox[2]
-    $context.PushTransform((New-Object System.Windows.Media.ScaleTransform $scale, $scale))
+    # Fit the whole viewBox into the square frame, centred, whatever its origin or aspect ratio.
+    $minX, $minY, $width, $height = $svg.ViewBox
+    $scale = $size / [Math]::Max($width, $height)
+    $offsetX = ($size - $width * $scale) / 2
+    $offsetY = ($size - $height * $scale) / 2
+    $placement = New-Object System.Windows.Media.TransformGroup
+    [void]$placement.Children.Add((New-Object System.Windows.Media.TranslateTransform (-$minX), (-$minY)))
+    [void]$placement.Children.Add((New-Object System.Windows.Media.ScaleTransform $scale, $scale))
+    [void]$placement.Children.Add((New-Object System.Windows.Media.TranslateTransform $offsetX, $offsetY))
+    $context.PushTransform($placement)
     Draw-Node $svg $context $svg.Doc.DocumentElement $size '#000000' 1.0
     $context.Pop()
     $context.Close()
@@ -150,9 +162,9 @@ $frames = @()
 foreach ($size in $sizes) {
     [byte[]]$bytes = ConvertTo-PngBytes (Render-Frame $logo $size)
     if ($bytes.Length -lt 100 -or $bytes[1] -ne 0x50) { throw "Frame $size did not encode as PNG ($($bytes.Length) bytes)." }
-    if ($size -eq 256) { [System.IO.File]::WriteAllBytes((Join-Path $OutDir 'SellSpec.png'), $bytes) }
     $frames += ,@{ Size = $size; Bytes = $bytes }
 }
+$png = ($frames | Where-Object { $_.Size -eq 256 }).Bytes
 
 # ICO container: header, one directory entry per frame, then the PNG payloads.
 $ico = New-Object System.IO.MemoryStream
@@ -168,6 +180,20 @@ foreach ($frame in $frames) {
 }
 foreach ($frame in $frames) { $writer.Write($frame.Bytes) }
 $writer.Flush()
-[System.IO.File]::WriteAllBytes((Join-Path $OutDir 'SellSpec.ico'), $ico.ToArray())
+$icoBytes = $ico.ToArray()
 $writer.Dispose(); $ico.Dispose()
+
+# Everything is rendered before anything is written, and both files are staged beside their targets and then moved
+# into place back to back, so an interrupted run never leaves a half-written file or a lone updated one behind.
+$outputs = @(
+    @{ Name = 'SellSpec.ico'; Bytes = $icoBytes },
+    @{ Name = 'SellSpec.png'; Bytes = $png }
+)
+foreach ($output in $outputs) {
+    $output.Temp = Join-Path $OutDir ($output.Name + '.' + [System.IO.Path]::GetRandomFileName() + '.tmp')
+    [System.IO.File]::WriteAllBytes($output.Temp, $output.Bytes)
+}
+foreach ($output in $outputs) {
+    Move-Item -LiteralPath $output.Temp -Destination (Join-Path $OutDir $output.Name) -Force
+}
 Write-Host "Rendered $Svg to $(Join-Path $OutDir 'SellSpec.ico') ($($frames.Count) frames) and SellSpec.png"

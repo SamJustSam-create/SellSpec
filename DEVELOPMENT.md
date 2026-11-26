@@ -56,7 +56,7 @@ WPF cannot be IL-trimmed, so the self-contained build carries the whole desktop 
 
 `build\checksums.ps1` writes `SHA256SUMS.txt` (sha256sum format) for everything in `artifacts\`.
 
-The logo's master is `assets\logo.svg`. `build\make-icon.ps1` renders it with WPF into `src\SellSpec.App\Assets\SellSpec.ico` (16 to 256 px frames) and `SellSpec.png` (the sidebar image); no external tool is needed. The script understands only the SVG subset the logo uses (paths with solid or linear-gradient fills, group transforms, `data-min-size` to drop detail from small frames), so keep edits within that or extend the script.
+The logo's master is `assets\logo.svg`. `build\make-icon.ps1` renders it with WPF into `src\SellSpec.App\Assets\SellSpec.ico` (16 to 256 px frames) and `SellSpec.png` (the sidebar image); no external tool is needed. The script understands only the SVG subset the logo uses (paths with solid or linear-gradient fills, `fill-rule`, group transforms, `data-min-size` / `data-max-size` to swap detail in and out by frame size), so keep edits within that or extend the script. Cut-outs such as the tag's hole are part of the tag path with the even-odd rule rather than a shape painted over it, so they show the background correctly however the tag is rotated.
 
 ## Versioning
 
