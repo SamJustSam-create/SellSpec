@@ -24,9 +24,10 @@ It is built for people selling a laptop or desktop on Facebook Marketplace, eBay
 3. **Shows device health**: reported battery health and cycle count, reported drive health and power-on hours, Windows activation, a basic Windows 11 readiness check, and the seller's own hardware test results. Grey always means "not checked", never "passed".
 4. **Guides optional hardware tests**: on-screen keyboard, full-screen colour display test, speaker tone (left/right/both), microphone level meter, webcam check via the Windows Camera app, and connectivity confirmations. Results are recorded as seller-confirmed.
 5. **Collects a short condition questionnaire** (overall grade, cosmetic damage, screen/keyboard/trackpad/hinge, battery concerns, charger and box, known defects, history, accessories, notes, asking price). Skipped questions never become claims.
-6. **Generates marketplace listings** for Facebook Marketplace, eBay, Gumtree and a general template, with platform title limits, editable text, one-click copy of title and description, and plain-text export.
-7. **Exports a specification report** as PNG, PDF, plain text or JSON, with a preview, SellSpec branding, the scan date and a plain-language disclaimer.
-8. **Offers a pre-sale privacy checklist** that explains what to do before handing over the device and opens the relevant Windows Settings pages. It never deletes or resets anything.
+6. **Remembers your answers and test results for each device model** in its data folder (never with serial numbers) and offers them back after a restart or an administrator rescan, so nothing has to be typed twice. Turn it off or clear it in Settings.
+7. **Generates marketplace listings** for Facebook Marketplace, eBay, Gumtree and a general template, with platform title limits, editable text, one-click copy of title and description, and plain-text export.
+8. **Exports a specification report** as PNG, PDF, plain text or JSON, with a preview, SellSpec branding, the scan date and a plain-language disclaimer.
+9. **Offers a pre-sale privacy checklist** that explains what to do before handing over the device and opens the relevant Windows Settings pages. It never deletes or resets anything.
 
 Serial numbers, UUIDs, MAC and IP addresses, product keys and user names are never written to listings, reports, exports or logs. See [PRIVACY.md](PRIVACY.md).
 
@@ -60,7 +61,7 @@ If the .NET Desktop Runtime 10 is missing, the framework-dependent builds show W
 
 ### Portable mode
 
-If a file named `portable.txt` sits next to `SellSpec.exe` (the zip includes one), settings and logs are kept in a `data` folder beside the executable. Otherwise they live in `%LOCALAPPDATA%\SellSpec`. Nothing else is written to the system; there is no installer and no registry footprint.
+If a file named `portable.txt` sits next to `SellSpec.exe` (the zip includes one), settings, remembered answers and logs are kept in a `data` folder beside the executable. Otherwise they live in `%LOCALAPPDATA%\SellSpec`. Nothing else is written to the system; there is no installer and no registry footprint.
 
 ### Command-line switches
 

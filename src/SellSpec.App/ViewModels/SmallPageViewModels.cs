@@ -86,6 +86,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _currencySymbol = "$";
     [ObservableProperty] private bool _enableDiagnosticLogging;
     [ObservableProperty] private bool _showProvenanceLabels;
+    [ObservableProperty] private bool _rememberAnswers;
     [ObservableProperty] private string? _statusMessage;
 
     // Detection problem reporting (not persisted; excluded from settings saves).
@@ -110,6 +111,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         CurrencySymbol = s.CurrencySymbol;
         EnableDiagnosticLogging = s.EnableDiagnosticLogging;
         ShowProvenanceLabels = s.ShowProvenanceLabels;
+        RememberAnswers = s.RememberAnswers;
         _loading = false;
     }
 
@@ -118,6 +120,20 @@ public sealed partial class SettingsViewModel : ObservableObject
         base.OnPropertyChanged(e);
         if (_loading || e.PropertyName is nameof(StatusMessage) or nameof(DiagnosticsNotes) or nameof(DiagnosticsStatus) or nameof(CanSaveDiagnostics)) return;
         Save();
+        if (e.PropertyName == nameof(RememberAnswers))
+        {
+            // Turning it off is a privacy choice, so the file goes too; turning it on remembers the current answers at once.
+            if (RememberAnswers) _shell.Persistence.SaveNow();
+            else _shell.ClearSavedAnswers();
+            StatusMessage = RememberAnswers ? "Saved. Answers are remembered for each device model." : "Saved. Remembered answers were deleted.";
+        }
+    }
+
+    [RelayCommand]
+    private void ClearSavedAnswers()
+    {
+        _shell.ClearSavedAnswers();
+        StatusMessage = "Remembered answers for every device were deleted. The answers in this session are unchanged.";
     }
 
     [RelayCommand]
@@ -215,6 +231,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             CurrencySymbol = string.IsNullOrWhiteSpace(CurrencySymbol) ? "$" : CurrencySymbol.Trim(),
             EnableDiagnosticLogging = EnableDiagnosticLogging,
             ShowProvenanceLabels = ShowProvenanceLabels,
+            RememberAnswers = RememberAnswers,
         };
         if (_shell.Logger is FileScanLogger fileLogger) fileLogger.Enabled = EnableDiagnosticLogging;
         _shell.SaveSettings(settings);

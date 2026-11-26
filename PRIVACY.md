@@ -21,7 +21,11 @@ It also reads, for the owner's reference only, the system serial number, system 
 
 Nowhere. SellSpec has no network code. There is no telemetry, no analytics, no update check and no account.
 
-Files are written only when you ask: listings and reports go to the location you choose in the save dialog; settings and an optional diagnostic log go to `%LOCALAPPDATA%\SellSpec` (or the `data` folder next to the executable in portable mode).
+Files are written only when you ask: listings and reports go to the location you choose in the save dialog; settings, remembered answers and an optional diagnostic log go to `%LOCALAPPDATA%\SellSpec` (or the `data` folder next to the executable in portable mode).
+
+## Remembered answers
+
+So that nothing has to be typed twice, SellSpec keeps your questionnaire answers and hardware test results in `answers.json` in that folder and offers them back when the same device model is scanned again, including after an administrator rescan. The file is keyed by the public model name (brand, product and model number, or the motherboard for a custom build), never by a serial number or UUID, and every write goes through the same redaction check as an export: a serial number typed into a note stops the file being written and SellSpec says so. Nothing is kept for the demonstration device or for a device whose model cannot be identified. Settings → *Remember questionnaire answers and hardware test results* turns it off, which also deletes the file; *Clear remembered answers* deletes the file while keeping the current session.
 
 ## The diagnostic log
 

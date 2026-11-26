@@ -75,13 +75,18 @@ Pure functions in `SellSpec.Core.Normalisation`:
 
 `Redactor.EnsureClean` runs on every clipboard copy and file export. It checks the output for any private identifier captured during the scan, MAC addresses, IPv4 addresses, product-key patterns and user-profile paths, and refuses the export if anything matches. `LogSanitiser` applies the same rules to every log line.
 
+### Remembered answers
+
+`Core.Sessions` keeps the seller's work between sessions without identifying the device. `DeviceKey` derives a key from public identity only (brand, product and model number; the motherboard for a custom build; nothing for virtual machines or placeholder firmware). `JsonSavedAnswersStore` holds one `SavedDeviceAnswers` (questionnaire plus test results) per key, newest first and capped, and refuses any write that fails `Redactor`. `SavedAnswersPolicy` decides, from pure inputs, whether a scan keeps the current session (same key), offers saved answers (seller chooses) or restores them outright (the first scan of an elevated relaunch).
+
 ## Application layer
 
-- `ShellViewModel` owns navigation, the scan lifecycle and the shared `AppSession` (snapshot, questionnaire, test results, settings).
+- `ShellViewModel` owns navigation, the scan lifecycle and the shared `AppSession` (snapshot, questionnaire, test results, settings, the saved-answers offer).
+- `AnswerPersistence` listens to questionnaire and test changes and writes the current device's answers through the store after a short pause; `ShellViewModel` flushes it before an elevated relaunch and `App` flushes it on exit.
 - Page view models (`Overview`, `Specifications`, `DeviceHealth`, `HardwareTests`, `CreateListing`, `ExportReport`, `PrivacyChecklist`, `Settings`, `About`) subscribe to session changes and rebuild their rows; they contain presentation logic only.
 - Views are XAML `UserControl`s selected by `DataTemplate`s in `Views/PageTemplates.xaml`.
 - Theming: `Themes/Tokens.xaml` (type, spacing, icon glyphs), `Light.xaml` / `Dark.xaml` (brushes, swapped at runtime by `ThemeManager`, following the Windows app theme when set to System), `Controls.xaml` (restyled WPF controls).
-- Services: `AppPaths` (portable vs local app data), `FileScanLogger`, `ExportService` (atomic writes after redaction), `ClipboardService`, `ExternalLauncher` (allow-listed `ms-settings:` and `microsoft.windows.camera:` URIs, folders, elevated relaunch), `SoundService`, `CaptureHelper` (developer screenshots).
+- Services: `AppPaths` (portable vs local app data; `settings.json`, `answers.json`, `logs`), `FileScanLogger`, `ExportService` (atomic writes after redaction), `ClipboardService`, `ExternalLauncher` (allow-listed `ms-settings:` and `microsoft.windows.camera:` URIs, folders, elevated relaunch), `SoundService`, `CaptureHelper` (developer screenshots).
 
 ## Design rules
 

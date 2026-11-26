@@ -25,7 +25,7 @@ Honest list of what is partial, estimated or not implemented in 0.1.0-alpha. Ite
 
 - **Webcam test** does not show a preview inside SellSpec; it opens the Windows Camera app. A WinRT-based in-app preview was deliberately left out because it adds ~20 MB of Windows SDK projections (see docs/DECISIONS.md).
 - **Keyboard test** cannot observe the Fn key, and Windows intercepts the Windows key and Print Screen on key-up; those are tested by eye.
-- **Hardware test results and questionnaire answers are not saved** between sessions; a rescan clears test results (answers are kept until the app closes).
+- **Remembered answers are keyed by device model, not by unit.** Two identical models share one saved set (the seller is asked before it is restored), and a device whose model cannot be identified (placeholder firmware strings, virtual machines) is not remembered at all.
 - **Reports are not signed or tamper-proof**, and say so.
 - **Listing templates are built in**; custom templates, branded reports, bulk scanning, inventory, CSV, valuations and marketplace posting are roadmap items.
 - **Single language** (English, Australian spelling). Currency symbol is configurable; number formatting uses invariant culture in listings.

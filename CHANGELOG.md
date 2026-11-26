@@ -5,6 +5,7 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 ## [Unreleased]
 
 ### Added
+- Remembered answers: questionnaire answers and hardware test results are saved per device model in `answers.json` in the data folder a moment after they change, and offered back (Restore / Discard) when the same model is scanned again; an administrator rescan restores them automatically. The file is keyed by public model identity only, is redaction-checked on every write, and is never written for the demonstration device or an unidentifiable device. Settings gains *Remember questionnaire answers and hardware test results* (turning it off deletes the file) and *Clear remembered answers*.
 - Settings → *Report a detection problem*: saves a diagnostics bundle (public JSON report, raw detection dump with firmware strings, codes, provenance and notes, scan issues, today's sanitised log, optional description) as a zip for attaching to a GitHub report. Every entry is redaction-checked; identifiers are never included. A button opens the GitHub issue form, the only web address SellSpec ever opens.
 - "Something wrong? Report a detection problem" link on the Overview page.
 - GitHub issue forms for detection reports and bug reports, with links to the detection methods and known limitations.
@@ -18,6 +19,7 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 - The commercial-licensing roadmap item was dropped: SellSpec is open source for good.
 
 ### Fixed
+- A rescan of the same device no longer clears hardware test results and answers; they are cleared only when a different device is scanned. The test cards now update when results change outside the card (rescan, restore).
 - The export redaction check no longer flags the sanitiser's own `C:\Users\[user]` placeholder as a leak.
 - Redaction now also catches IPv6 addresses, short private identifiers as whole tokens, and the Windows account and computer names in diagnostics bundles.
 - Bluetooth device names in the Specifications page and diagnostics bundles are limited to hardware radios; paired devices with personal names are excluded.

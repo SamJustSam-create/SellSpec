@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SellSpec.Core.Testing;
 
 public enum HardwareTestKind
@@ -36,9 +38,9 @@ public sealed record HardwareTestResult(
     string? Evidence = null,
     DateTimeOffset? CompletedAt = null)
 {
-    public bool IsPass => Outcome is TestOutcome.Passed or TestOutcome.PassedWithNotes;
-    public bool IsFail => Outcome == TestOutcome.Failed;
-    public bool WasTested => Outcome is not (TestOutcome.NotTested or TestOutcome.Skipped);
+    [JsonIgnore] public bool IsPass => Outcome is TestOutcome.Passed or TestOutcome.PassedWithNotes;
+    [JsonIgnore] public bool IsFail => Outcome == TestOutcome.Failed;
+    [JsonIgnore] public bool WasTested => Outcome is not (TestOutcome.NotTested or TestOutcome.Skipped);
 
     public static HardwareTestResult NotTested(HardwareTestKind kind) => new(kind, TestOutcome.NotTested, TestSource.SellerConfirmed);
 }

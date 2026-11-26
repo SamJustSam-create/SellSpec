@@ -22,14 +22,20 @@ public sealed partial class HardwareTestsViewModel : ObservableObject
         }
         _shell.Session.PropertyChanged += (_, e) =>
         {
-            if (e.PropertyName == nameof(AppSession.ScanResult))
-            {
-                foreach (var t in Tests) t.RefreshFromSession();
-            }
+            if (e.PropertyName == nameof(AppSession.ScanResult)) RefreshAll();
         };
+        // Results also change outside the cards: a rescan of another device clears them, remembered results come back.
+        _shell.Session.Tests.Changed += (_, _) => RefreshAll();
     }
 
+    public ShellViewModel Shell => _shell;
     public ObservableCollection<HardwareTestCardViewModel> Tests { get; } = new();
+
+    private void RefreshAll()
+    {
+        foreach (var t in Tests) t.RefreshFromSession();
+        NotifyCounts();
+    }
 
     public int CompletedCount => Tests.Count(t => t.Outcome != TestOutcome.NotTested);
 
@@ -129,12 +135,33 @@ public sealed partial class HardwareTestCardViewModel : ObservableObject, IDispo
         }
     }
 
+    private bool _refreshing;
+
+    /// <summary>Mirrors the session's result into the card without writing it back, so refreshing never alters the stored result.</summary>
     public void RefreshFromSession()
     {
         var result = _shell.Session.Tests.Get(Kind);
-        Outcome = result.Outcome;
-        Notes = result.Notes ?? string.Empty;
-        Evidence = result.Evidence;
+        _refreshing = true;
+        try
+        {
+            Outcome = result.Outcome;
+            var notes = result.Notes ?? string.Empty;
+            if (Notes.Trim() != notes) Notes = notes; // keep what the seller is typing when only whitespace differs
+            Evidence = result.Evidence;
+            if (Kind == HardwareTestKind.Connectivity)
+            {
+                var evidence = result.Evidence ?? string.Empty;
+                WifiConfirmed = evidence.Contains("Wi-Fi", StringComparison.Ordinal);
+                BluetoothConfirmed = evidence.Contains("Bluetooth", StringComparison.Ordinal);
+                EthernetConfirmed = evidence.Contains("Ethernet", StringComparison.Ordinal);
+                UsbConfirmed = evidence.Contains("USB ports", StringComparison.Ordinal);
+                VideoOutConfirmed = evidence.Contains("video output", StringComparison.Ordinal);
+            }
+        }
+        finally
+        {
+            _refreshing = false;
+        }
         OnPropertyChanged(nameof(DetectedSummary));
     }
 
@@ -146,6 +173,7 @@ public sealed partial class HardwareTestCardViewModel : ObservableObject, IDispo
 
     private void Persist()
     {
+        if (_refreshing) return;
         var evidence = Evidence;
         if (Kind == HardwareTestKind.Connectivity)
         {

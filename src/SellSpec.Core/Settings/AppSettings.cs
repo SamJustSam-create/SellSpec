@@ -25,6 +25,10 @@ public sealed record AppSettings
     public string CurrencySymbol { get; init; } = "$";
     public bool EnableDiagnosticLogging { get; init; } = true;
     public bool ShowProvenanceLabels { get; init; } = true;
+
+    /// <summary>Keep questionnaire answers and hardware test results per device model between sessions.</summary>
+    public bool RememberAnswers { get; init; } = true;
+
     public string? LastExportFolder { get; init; }
 
     public ListingOptions ToListingOptions() => new()

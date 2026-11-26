@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SellSpec.Core.Listing;
 
 public enum ConditionGrade
@@ -59,6 +61,7 @@ public sealed record ConditionQuestionnaire
 
     public static ConditionQuestionnaire Empty { get; } = new();
 
+    [JsonIgnore]
     public bool IsEmpty =>
         OverallCondition == ConditionGrade.Unspecified && HasCosmeticDamage == Answer.Unspecified &&
         Screen == ComponentCondition.Unspecified && Keyboard == ComponentCondition.Unspecified &&

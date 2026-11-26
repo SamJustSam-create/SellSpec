@@ -9,6 +9,7 @@ namespace SellSpec.App;
 public partial class App : Application
 {
     private FileScanLogger? _logger;
+    private ShellViewModel? _shell;
 
     public App() : this(StartupOptions.Parse(Environment.GetCommandLineArgs().Skip(1).ToArray()))
     {
@@ -39,7 +40,9 @@ public partial class App : Application
         var theme = new ThemeManager(this);
         theme.Apply(settings.Theme);
 
-        var shell = new ShellViewModel(paths, settingsStore, settings, _logger, theme, Options);
+        var answersStore = new Core.Sessions.JsonSavedAnswersStore(paths.AnswersFile);
+        var shell = new ShellViewModel(paths, settingsStore, answersStore, settings, _logger, theme, Options);
+        _shell = shell;
         var window = new MainWindow { DataContext = shell };
         MainWindow = window;
         window.Show();
@@ -50,6 +53,7 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
+        _shell?.Persistence.Flush();
         _logger?.Log(LogLevel.Info, "App", "Exiting.");
         _logger?.Dispose();
         base.OnExit(e);
