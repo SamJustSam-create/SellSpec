@@ -1,5 +1,8 @@
 # SellSpec
 
+[![CI](https://github.com/SamJustSam-create/SellSpec/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJustSam-create/SellSpec/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/SamJustSam-create/SellSpec?include_prereleases&label=release)](https://github.com/SamJustSam-create/SellSpec/releases)
+
 **Scan it. List it. Sell it.**
 
 SellSpec is a lightweight Windows desktop application that reads a computer's real specifications and health, asks the seller a few questions software cannot answer, and turns the result into a ready-to-paste marketplace listing and a shareable specification report.

@@ -62,6 +62,32 @@ WPF cannot be IL-trimmed, so the self-contained build carries the whole desktop 
 
 `Directory.Build.props` holds `VersionPrefix` (e.g. `0.1.0`) and `VersionSuffix` (`alpha`, `beta`, `rc1`, or empty for a release). The value flows into the assembly informational version, the About page, reports and artifact names. Update `CHANGELOG.md` with every version bump.
 
+## Continuous integration
+
+Two GitHub Actions workflows live in `.github/workflows/`:
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci.yml` | every push and pull request to `main`, or manually | restores, builds in Release and runs the whole test suite on `windows-latest`; uploads the `.trx` results as an artifact. The real-hardware integration tests run against the GitHub runner VM |
+| `release.yml` | a pushed tag matching `v*` | two jobs. A **read-only build job** requires the tagged commit to be on `main`, checks that the tag has the exact (case-sensitive) form `v<major>.<minor>.<patch>[-<suffix>]` and equals the version in `Directory.Build.props`, builds and tests, runs `build\publish.ps1 -SkipTests` and uploads the artifacts. A separate **release job**, the only one with write access, downloads those artifacts, creates a *draft* release with the zip, both executables and `SHA256SUMS.txt`, and publishes it only once every asset is attached. Tags containing a hyphen (`v0.2.0-alpha`) become pre-releases; runs for the same tag are serialised |
+
+Both workflows pin every action to a full commit SHA (the version is in a trailing comment) and `.github/dependabot.yml` proposes monthly updates for actions and for the NuGet packages under `src/` and `tests/` (grouped into one pull request). The tag name is passed to scripts through an environment variable, never interpolated into script source.
+
+### Cutting a release
+
+1. Set `VersionPrefix` and `VersionSuffix` in `Directory.Build.props` (empty suffix for a stable release).
+2. Add the version's section to `CHANGELOG.md` and commit to `main` (through a pull request so `ci.yml` runs).
+3. Tag and push:
+
+   ```powershell
+   git tag -a v0.2.0-alpha -m "SellSpec 0.2.0-alpha"
+   git push origin v0.2.0-alpha
+   ```
+
+4. Watch the *Release* workflow; when it finishes, review the generated release page and edit the notes if needed.
+
+If the tag and the version disagree, the tag is malformed, or the tagged commit is not on `main`, the workflow stops before building, so a mislabeled or unreviewed release cannot be published. The signing step is a commented placeholder in `release.yml` until a certificate exists (see below).
+
 ## Code signing
 
 The artifacts are **not signed**. To sign future releases:

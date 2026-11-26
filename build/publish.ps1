@@ -27,9 +27,14 @@ $ErrorActionPreference = 'Stop'
 $root = Resolve-Path (Join-Path $PSScriptRoot '..')
 . (Join-Path $PSScriptRoot 'dotnet-env.ps1')
 
-$props = [xml](Get-Content (Join-Path $root 'Directory.Build.props'))
-$versionPrefix = $props.Project.PropertyGroup.VersionPrefix | Where-Object { $_ } | Select-Object -First 1
-$versionSuffix = $props.Project.PropertyGroup.VersionSuffix | Where-Object { $_ } | Select-Object -First 1
+# Read the version through XPath InnerText so an empty <VersionSuffix></VersionSuffix> (a stable release)
+# yields no suffix rather than a truthy XML element.
+$props = [xml](Get-Content (Join-Path $root 'Directory.Build.props') -Raw)
+$prefixNode = $props.SelectSingleNode('/Project/PropertyGroup/VersionPrefix')
+$suffixNode = $props.SelectSingleNode('/Project/PropertyGroup/VersionSuffix')
+$versionPrefix = if ($prefixNode) { $prefixNode.InnerText.Trim() } else { '' }
+$versionSuffix = if ($suffixNode) { $suffixNode.InnerText.Trim() } else { '' }
+if (-not $versionPrefix) { throw 'VersionPrefix is missing from Directory.Build.props.' }
 $version = if ($versionSuffix) { "$versionPrefix-$versionSuffix" } else { $versionPrefix }
 
 $artifacts = Join-Path $root 'artifacts'
