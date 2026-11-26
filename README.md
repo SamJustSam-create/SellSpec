@@ -15,7 +15,7 @@ It is built for people selling a laptop or desktop on Facebook Marketplace, eBay
 |---|---|
 | Platform | Windows 10 / 11, 64-bit |
 | Stack | C# 14, .NET 10 (LTS), WPF, MVVM |
-| Status | **0.1.1-alpha** – functional MVP; alpha pre-releases on GitHub |
+| Status | **0.1.2-alpha** – functional MVP; alpha pre-releases on GitHub |
 | Network | None. No accounts, no telemetry, nothing leaves the device |
 | Privileges | Standard user. Elevation is never required |
 
@@ -121,7 +121,7 @@ docs/                          hardware detection methods, decisions, manual tes
 
 ## Code signing policy
 
-Release executables are to be signed through SignPath Foundation's free programme for open-source projects. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) lists what is signed, how a release is built and approved, the team roles, and how to verify a signature. Releases up to and including 0.1.1-alpha are unsigned; the policy names the first signed release when it ships.
+Release executables are to be signed through SignPath Foundation's free programme for open-source projects. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) lists what is signed, how a release is built and approved, the team roles, and how to verify a signature. Releases up to and including 0.1.2-alpha are unsigned; the policy names the first signed release when it ships.
 
 ## Licence
 
