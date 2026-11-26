@@ -148,14 +148,18 @@ public static class ExternalLauncher
         }
     }
 
-    /// <summary>Relaunches SellSpec with administrator rights so storage reliability counters can be read. Triggers a UAC prompt.</summary>
-    public static bool RelaunchElevated()
+    /// <summary>
+    /// Relaunches SellSpec with administrator rights so storage reliability counters can be read. Triggers a UAC prompt.
+    /// <paramref name="portable"/> carries the --portable switch over so the elevated instance uses the same data folder.
+    /// </summary>
+    public static bool RelaunchElevated(bool portable)
     {
         var exe = Environment.ProcessPath;
         if (string.IsNullOrEmpty(exe)) return false;
+        var arguments = portable ? "--elevated-rescan --portable" : "--elevated-rescan";
         try
         {
-            Process.Start(new ProcessStartInfo(exe, "--elevated-rescan") { UseShellExecute = true, Verb = "runas" });
+            Process.Start(new ProcessStartInfo(exe, arguments) { UseShellExecute = true, Verb = "runas" });
             return true;
         }
         catch (System.ComponentModel.Win32Exception)

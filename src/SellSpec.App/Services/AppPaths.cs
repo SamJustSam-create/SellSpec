@@ -17,6 +17,7 @@ public sealed class AppPaths
             : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SellSpec");
 
         SettingsFile = Path.Combine(DataDirectory, "settings.json");
+        AnswersFile = Path.Combine(DataDirectory, "answers.json");
         LogDirectory = Path.Combine(DataDirectory, "logs");
         TempDirectory = Path.Combine(Path.GetTempPath(), "SellSpec");
     }
@@ -25,6 +26,10 @@ public sealed class AppPaths
     public bool IsPortable { get; }
     public string DataDirectory { get; }
     public string SettingsFile { get; }
+
+    /// <summary>Remembered questionnaire answers and test results per device model (no identifiers).</summary>
+    public string AnswersFile { get; }
+
     public string LogDirectory { get; }
     public string TempDirectory { get; }
 

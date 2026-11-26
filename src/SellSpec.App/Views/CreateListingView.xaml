@@ -15,6 +15,7 @@
       <StackPanel>
         <TextBlock Text="Create Listing" Style="{StaticResource PageTitle}" />
         <TextBlock Text="Answer what software cannot see, pick a marketplace, then copy the title and description. Skipped questions never turn into claims." Style="{StaticResource PageSubtitle}" />
+        <views:SavedAnswersBanner DataContext="{Binding Shell}" />
       </StackPanel>
 
       <Grid Grid.Row="1">

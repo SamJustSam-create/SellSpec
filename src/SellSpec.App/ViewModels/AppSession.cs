@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SellSpec.Core.Detection;
 using SellSpec.Core.Listing;
 using SellSpec.Core.Models;
+using SellSpec.Core.Sessions;
 using SellSpec.Core.Settings;
 using SellSpec.Core.Testing;
 
@@ -18,6 +20,16 @@ public sealed partial class AppSession : ObservableObject
 
     [ObservableProperty]
     private AppSettings _settings = AppSettings.Default;
+
+    /// <summary>Answers remembered from an earlier session for this device model, waiting for the seller to restore or discard them.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSavedAnswersOffer))]
+    [NotifyPropertyChangedFor(nameof(SavedAnswersOfferDetail))]
+    private SavedDeviceAnswers? _savedAnswersOffer;
+
+    /// <summary>One-line note about remembered answers (restored, discarded, or why they could not be saved).</summary>
+    [ObservableProperty]
+    private string? _savedAnswersStatus;
 
     public AppSession(bool isDemo, bool isElevated)
     {
@@ -35,7 +47,37 @@ public sealed partial class AppSession : ObservableObject
     public QuestionnaireViewModel Questionnaire { get; }
     public HardwareTestStore Tests { get; }
 
+    /// <summary>Key of the scanned device model (see <see cref="DeviceKey"/>), or null when it cannot be identified; nothing is remembered then.</summary>
+    public string? CurrentDeviceKey { get; set; }
+
     public ConditionQuestionnaire Condition => Questionnaire.ToQuestionnaire();
+
+    /// <summary>True once the seller has answered anything or recorded any test result in this session.</summary>
+    public bool HasAnswers => !Condition.IsEmpty || Tests.Results.Count > 0;
+
+    public bool HasSavedAnswersOffer => SavedAnswersOffer is not null;
+
+    public string SavedAnswersOfferDetail
+    {
+        get
+        {
+            if (SavedAnswersOffer is not { } saved) return string.Empty;
+            var parts = new List<string>();
+            if (!saved.Questionnaire.IsEmpty) parts.Add("questionnaire answers");
+            if (saved.Tests.Count > 0) parts.Add(saved.Tests.Count == 1 ? "one hardware test result" : $"{saved.Tests.Count} hardware test results");
+            var what = string.Join(" and ", parts);
+            what = char.ToUpperInvariant(what[0]) + what[1..];
+            return $"{what} were saved for a {saved.DeviceLabel} on {saved.SavedAt.LocalDateTime:d MMMM yyyy}. Restore them if this is the same device, or discard them and start again. Anything you enter now replaces what was saved.";
+        }
+    }
+
+    /// <summary>Puts remembered answers and test results into the current session and clears the offer.</summary>
+    public void ApplySaved(SavedDeviceAnswers saved)
+    {
+        Questionnaire.Apply(saved.Questionnaire);
+        Tests.Replace(saved.Tests);
+        SavedAnswersOffer = null;
+    }
 }
 
 /// <summary>Keeps one result per test kind and raises a change notification when anything is set.</summary>
@@ -57,6 +99,18 @@ public sealed class HardwareTestStore
         }
         else
         {
+            _results[result.Kind] = result with { CompletedAt = result.CompletedAt ?? DateTimeOffset.Now };
+        }
+        Changed?.Invoke(this, EventArgs.Empty);
+    }
+
+    /// <summary>Replaces every result at once (used when remembered results come back), raising a single change.</summary>
+    public void Replace(IEnumerable<HardwareTestResult> results)
+    {
+        _results.Clear();
+        foreach (var result in results)
+        {
+            if (result.Outcome == TestOutcome.NotTested) continue;
             _results[result.Kind] = result with { CompletedAt = result.CompletedAt ?? DateTimeOffset.Now };
         }
         Changed?.Invoke(this, EventArgs.Empty);
@@ -126,7 +180,7 @@ public sealed partial class QuestionnaireViewModel : ObservableObject
         get
         {
             var text = AskingPriceText.Trim().TrimStart('$', '£', '€', 'A', 'U', 'S').Replace(",", string.Empty).Trim();
-            return decimal.TryParse(text, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var v) && v > 0 ? v : null;
+            return decimal.TryParse(text, NumberStyles.Number, CultureInfo.InvariantCulture, out var v) && v > 0 ? v : null;
         }
     }
 
@@ -165,6 +219,28 @@ public sealed partial class QuestionnaireViewModel : ObservableObject
         SellerNotes = Clean(SellerNotes),
         AskingPrice = AskingPrice,
     };
+
+    /// <summary>Loads answers (the reverse of <see cref="ToQuestionnaire"/>), e.g. remembered ones from an earlier session.</summary>
+    public void Apply(ConditionQuestionnaire q)
+    {
+        OverallCondition = q.OverallCondition;
+        HasCosmeticDamage = q.HasCosmeticDamage;
+        CosmeticDamageNotes = q.CosmeticDamageNotes ?? string.Empty;
+        Screen = q.Screen;
+        Keyboard = q.Keyboard;
+        Trackpad = q.Trackpad;
+        Hinge = q.Hinge;
+        HasBatteryConcern = q.HasBatteryConcern;
+        BatteryNotes = q.BatteryNotes ?? string.Empty;
+        ChargerIncluded = q.ChargerIncluded;
+        OriginalPackagingIncluded = q.OriginalPackagingIncluded;
+        HasKnownDefects = q.HasKnownDefects;
+        KnownDefects = q.KnownDefects ?? string.Empty;
+        RepairOrUpgradeHistory = q.RepairOrUpgradeHistory ?? string.Empty;
+        AdditionalAccessories = q.AdditionalAccessories ?? string.Empty;
+        SellerNotes = q.SellerNotes ?? string.Empty;
+        AskingPriceText = q.AskingPrice is { } price ? price.ToString("0.##", CultureInfo.InvariantCulture) : string.Empty;
+    }
 
     public void Reset()
     {

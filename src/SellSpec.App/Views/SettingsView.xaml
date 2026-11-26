@@ -65,12 +65,16 @@
       <TextBlock Text="Diagnostics and storage" Style="{StaticResource SectionHeaderText}" Margin="0,20,0,8" />
       <Border Style="{StaticResource Card}">
         <StackPanel>
-          <CheckBox Content="Keep a local diagnostic log (no serial numbers, addresses or personal data; last 7 days)" IsChecked="{Binding EnableDiagnosticLogging}" Margin="0,0,0,12" />
+          <CheckBox Content="Keep a local diagnostic log (no serial numbers, addresses or personal data; last 7 days)" IsChecked="{Binding EnableDiagnosticLogging}" Margin="0,0,0,8" />
+          <CheckBox IsChecked="{Binding RememberAnswers}" Margin="0,0,0,12">
+            <TextBlock Text="Remember questionnaire answers and hardware test results for each device model, so they are offered back after a restart or an administrator rescan (kept in the data folder, never with serial numbers; turning this off deletes them)" TextWrapping="Wrap" />
+          </CheckBox>
           <TextBlock Text="{Binding StorageModeLabel}" Style="{StaticResource SecondaryText}" />
           <TextBlock Text="{Binding DataFolder}" Style="{StaticResource CaptionText}" FontFamily="{StaticResource FontMono}" Margin="0,4,0,10" />
           <WrapPanel>
             <Button Content="Open data folder" Command="{Binding OpenDataFolderCommand}" Margin="0,0,8,8" />
             <Button Content="Open log folder" Command="{Binding OpenLogFolderCommand}" Margin="0,0,8,8" />
+            <Button Content="Clear remembered answers" Style="{StaticResource SubtleButton}" Command="{Binding ClearSavedAnswersCommand}" Margin="0,0,8,8" ToolTip="Deletes answers.json from the data folder. The answers in this session stay." />
             <Button Content="Reset to defaults" Style="{StaticResource SubtleButton}" Command="{Binding ResetDefaultsCommand}" Margin="0,0,8,8" />
           </WrapPanel>
           <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource CaptionText}" Visibility="{Binding StatusMessage, Converter={StaticResource StringToVisibility}}" />

@@ -8,7 +8,7 @@ dotnet test SellSpec.slnx
 
 | Project | Count | What it covers |
 |---|---|---|
-| `tests/SellSpec.Core.Tests` | 266 | normalisation (processor names, brands, placeholders, capacities, memory types, display names, Wi-Fi inference, graphics and device classification), battery health calculation (missing/invalid/multiple packs/zero cycles), storage health, Windows 11 assessment, the scanner (failing, slow and cancelled providers, progress, private-value registration), snapshot enrichment, log sanitising, title building and platform limits, listing generation for every scenario and marketplace, questionnaire handling and defect disclosure, report building, text/JSON/PDF writers (structure, xref offsets, pagination, encoding), redaction, diagnostics bundle (entries, sanitised log, identifier refusal across all scenarios), settings store, test tone, checklist, demo device |
+| `tests/SellSpec.Core.Tests` | 287 | normalisation (processor names, brands, placeholders, capacities, memory types, display names, Wi-Fi inference, graphics and device classification), battery health calculation (missing/invalid/multiple packs/zero cycles), storage health, Windows 11 assessment, the scanner (failing, slow and cancelled providers, progress, private-value registration), snapshot enrichment, log sanitising, title building and platform limits, listing generation for every scenario and marketplace, questionnaire handling and defect disclosure, report building, text/JSON/PDF writers (structure, xref offsets, pagination, encoding), redaction, diagnostics bundle (entries, sanitised log, identifier refusal across all scenarios), remembered answers (device key from public identity only with separator escaping, store round-trip, newest-first cap, corrupt and damaged files, locked file reported, identifier refusal with no temp file left, notes count as answers, offer/restore policy), settings store, test tone, checklist, demo device |
 | `tests/SellSpec.Windows.Tests` | 56 | provider helper mappings (bus/media/location, SMART parsing, PnP matching, edition and licence parsing, model-code detection, memory rounding, Bluetooth radio-name filtering) and **integration tests on the real machine** (full scan completes within budget with no error-level issues, cancellation returns quickly, native calls do not throw, exports of the real scan contain no private identifiers) |
 
 The ten device scenarios required by the brief are fixtures in `tests/SellSpec.Core.Tests/Scenarios.cs` and are exercised by the listing and report tests:
@@ -26,7 +26,7 @@ The ten device scenarios required by the brief are fixtures in `tests/SellSpec.C
 
 Mocked hardware never reaches the production application. The only non-real data path is the `--demo` switch, which loads a device manufactured by "SellSpec Demo" and shows a banner on every page.
 
-Last run (development machine, 2026-11-26): **322 passed, 0 failed, 0 skipped.** CI runs the same suite on `windows-latest` for every push and pull request.
+Last run (development machine, 2026-11-27): **343 passed, 0 failed, 0 skipped.** CI runs the same suite on `windows-latest` for every push and pull request.
 
 ## Performance measurements
 

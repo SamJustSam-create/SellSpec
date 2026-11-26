@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SellSpec.Core.Listing;
 
 public enum ConditionGrade
@@ -59,12 +61,15 @@ public sealed record ConditionQuestionnaire
 
     public static ConditionQuestionnaire Empty { get; } = new();
 
+    [JsonIgnore]
     public bool IsEmpty =>
         OverallCondition == ConditionGrade.Unspecified && HasCosmeticDamage == Answer.Unspecified &&
         Screen == ComponentCondition.Unspecified && Keyboard == ComponentCondition.Unspecified &&
         Trackpad == ComponentCondition.Unspecified && Hinge == ComponentCondition.Unspecified &&
         HasBatteryConcern == Answer.Unspecified && ChargerIncluded == Answer.Unspecified &&
         OriginalPackagingIncluded == Answer.Unspecified && HasKnownDefects == Answer.Unspecified &&
+        string.IsNullOrWhiteSpace(CosmeticDamageNotes) && string.IsNullOrWhiteSpace(BatteryNotes) &&
+        string.IsNullOrWhiteSpace(KnownDefects) &&
         string.IsNullOrWhiteSpace(RepairOrUpgradeHistory) && string.IsNullOrWhiteSpace(AdditionalAccessories) &&
         string.IsNullOrWhiteSpace(SellerNotes) && AskingPrice is null;
 

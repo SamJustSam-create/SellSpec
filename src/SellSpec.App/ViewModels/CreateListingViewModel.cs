@@ -37,6 +37,7 @@ public sealed partial class CreateListingViewModel : ObservableObject
         Regenerate();
     }
 
+    public ShellViewModel Shell => _shell;
     public QuestionnaireViewModel Questionnaire { get; }
     public ObservableCollection<MarketplaceOption> Marketplaces { get; }
     public ObservableCollection<string> Warnings { get; } = new();

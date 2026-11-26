@@ -25,6 +25,10 @@ public sealed record AppSettings
     public string CurrencySymbol { get; init; } = "$";
     public bool EnableDiagnosticLogging { get; init; } = true;
     public bool ShowProvenanceLabels { get; init; } = true;
+
+    /// <summary>Keep questionnaire answers and hardware test results per device model between sessions.</summary>
+    public bool RememberAnswers { get; init; } = true;
+
     public string? LastExportFolder { get; init; }
 
     public ListingOptions ToListingOptions() => new()
@@ -81,14 +85,7 @@ public sealed class JsonSettingsStore : ISettingsStore
 
     public void Save(AppSettings settings)
     {
-        var directory = System.IO.Path.GetDirectoryName(_path);
-        if (!string.IsNullOrEmpty(directory))
-        {
-            Directory.CreateDirectory(directory);
-        }
         var json = JsonSerializer.Serialize(settings, SettingsJsonContext.Default.AppSettings);
-        var temp = _path + ".tmp";
-        File.WriteAllText(temp, json);
-        File.Move(temp, _path, overwrite: true);
+        AtomicFile.WriteAllText(_path, json);
     }
 }

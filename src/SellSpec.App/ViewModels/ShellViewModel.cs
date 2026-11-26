@@ -6,6 +6,7 @@ using SellSpec.App.Services;
 using SellSpec.Core.Demo;
 using SellSpec.Core.Detection;
 using SellSpec.Core.Diagnostics;
+using SellSpec.Core.Sessions;
 using SellSpec.Core.Settings;
 using ThemeMode = SellSpec.Core.Settings.ThemeMode;
 using SellSpec.Windows;
@@ -17,21 +18,25 @@ public sealed record NavigationItem(string Key, string Title, string Glyph, bool
 public sealed partial class ShellViewModel : ObservableObject
 {
     private readonly ISettingsStore _settingsStore;
+    private readonly ISavedAnswersStore _answers;
     private readonly IScanLogger _logger;
     private readonly ThemeManager _theme;
     private readonly StartupOptions _options;
     private readonly Dictionary<string, object> _pages = new();
     private CancellationTokenSource? _scanCts;
+    private int _scanCount;
 
-    public ShellViewModel(AppPaths paths, ISettingsStore settingsStore, AppSettings settings, IScanLogger logger, ThemeManager theme, StartupOptions options)
+    public ShellViewModel(AppPaths paths, ISettingsStore settingsStore, ISavedAnswersStore answersStore, AppSettings settings, IScanLogger logger, ThemeManager theme, StartupOptions options)
     {
         Paths = paths;
         _settingsStore = settingsStore;
+        _answers = answersStore;
         _logger = logger;
         _theme = theme;
         _options = options;
         Export = new ExportService(logger) { LastDirectory = settings.LastExportFolder };
         Session = new AppSession(options.DemoMode, WindowsHardwareProviders.IsElevated()) { Settings = settings };
+        Persistence = new AnswerPersistence(Session, answersStore, logger);
 
         NavigationItems = new ObservableCollection<NavigationItem>
         {
@@ -51,6 +56,9 @@ public sealed partial class ShellViewModel : ObservableObject
     public AppPaths Paths { get; }
     public AppSession Session { get; }
     public ExportService Export { get; }
+
+    /// <summary>Remembers answers and test results per device model between sessions (Core.Sessions).</summary>
+    public AnswerPersistence Persistence { get; }
     public ThemeManager Theme => _theme;
     public IScanLogger Logger => _logger;
     public StartupOptions Options => _options;
@@ -128,9 +136,82 @@ public sealed partial class ShellViewModel : ObservableObject
     [RelayCommand]
     public void RescanElevated()
     {
-        if (!ExternalLauncher.RelaunchElevated())
+        // The elevated instance restores the remembered answers, so make sure they are on disk first, and keep it
+        // looking in the same data folder.
+        Persistence.Flush();
+        if (!ExternalLauncher.RelaunchElevated(_options.Portable))
         {
             ScanSummaryText = "Administrator rescan was not started.";
+        }
+    }
+
+    [RelayCommand]
+    private void RestoreSavedAnswers()
+    {
+        if (Session.SavedAnswersOffer is not { } saved) return;
+        Session.ApplySaved(saved);
+        Session.SavedAnswersStatus = $"Restored your answers and test results from {saved.SavedAt.LocalDateTime:d MMMM yyyy}. Check that they still describe this device.";
+        _logger.Log(LogLevel.Info, "Answers", "Remembered answers restored by the seller.");
+    }
+
+    [RelayCommand]
+    private void DiscardSavedAnswers()
+    {
+        if (Session.SavedAnswersOffer is not { } saved) return;
+        try
+        {
+            _answers.Remove(saved.DeviceKey);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException or Core.Privacy.RedactionException)
+        {
+            _logger.Log(LogLevel.Warning, "Answers", "Remembered answers could not be discarded.", ex);
+            Session.SavedAnswersStatus = "The saved answers could not be discarded: answers.json in the data folder is locked or not accessible. Try again.";
+            return; // The offer stays so the seller can retry or restore.
+        }
+        Session.SavedAnswersOffer = null;
+        Session.SavedAnswersStatus = "The saved answers for this model were discarded.";
+    }
+
+    /// <summary>Forgets every remembered device (Settings). The current session is untouched. Returns false if the file could not be deleted.</summary>
+    public bool ClearSavedAnswers()
+    {
+        Persistence.Cancel(); // A write still pending from an edit must not recreate the file.
+        var cleared = _answers.Clear();
+        Session.SavedAnswersOffer = null;
+        Session.SavedAnswersStatus = cleared ? null : "Remembered answers could not be deleted: answers.json in the data folder is locked or not accessible.";
+        if (!cleared) _logger.Log(LogLevel.Warning, "Answers", "answers.json could not be deleted.");
+        return cleared;
+    }
+
+    private void OfferSavedAnswers(string? deviceKey, bool isFirstScan)
+    {
+        Session.SavedAnswersOffer = null;
+        if (!SavedAnswersPolicy.CanRemember(Session.Settings.RememberAnswers, Session.IsDemo, deviceKey)) return;
+
+        SavedDeviceAnswers? saved;
+        try
+        {
+            saved = _answers.Find(deviceKey!);
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            _logger.Log(LogLevel.Warning, "Answers", "Remembered answers could not be read.", ex);
+            Session.SavedAnswersStatus = "Remembered answers could not be read: answers.json in the data folder is locked or not accessible.";
+            return;
+        }
+        var action = SavedAnswersPolicy.Decide(saved, Session.HasAnswers, _options.ElevatedRescan && isFirstScan);
+        // The key is model information only (see Core.Sessions.DeviceKey), so it is safe to log.
+        _logger.Log(LogLevel.Info, "Answers", $"Device key '{deviceKey}': remembered answers {(saved is null ? "none" : "found")}, action {action}.");
+        switch (action)
+        {
+            case SavedAnswersAction.Restore:
+                Session.ApplySaved(saved!);
+                Session.SavedAnswersStatus = "Restored the answers and test results you entered before the administrator rescan.";
+                _logger.Log(LogLevel.Info, "Answers", "Remembered answers restored after the elevated rescan.");
+                break;
+            case SavedAnswersAction.Offer:
+                Session.SavedAnswersOffer = saved;
+                break;
         }
     }
 
@@ -160,9 +241,12 @@ public sealed partial class ShellViewModel : ObservableObject
     {
         if (IsScanning) return;
         IsScanning = true;
+        // Pending edits belong to the device on screen now, not to whatever the rescan finds.
+        Persistence.Flush();
         RescanCommand.NotifyCanExecuteChanged();
         ScanProgress = 0;
         ScanStatusText = Session.IsDemo ? "Loading demonstration device…" : "Scanning this computer…";
+        Session.SavedAnswersStatus = null;
         _scanCts = new CancellationTokenSource();
 
         try
@@ -186,8 +270,19 @@ public sealed partial class ShellViewModel : ObservableObject
                 result = await scanner.ScanAsync(progress, _scanCts.Token);
             }
 
+            // Answers and test results describe a device: keep them across a rescan of the same model, drop them
+            // when the device changed, and offer back what an earlier session remembered.
+            var deviceKey = DeviceKey.For(result.Snapshot);
+            if (SavedAnswersPolicy.IsDifferentDevice(Session.CurrentDeviceKey, deviceKey))
+            {
+                Session.Tests.Clear();
+                Session.Questionnaire.Reset();
+            }
+            // A cancelled or incomplete rescan has no key; it is still the same machine, so keep remembering under the old one.
+            Session.CurrentDeviceKey = deviceKey ?? Session.CurrentDeviceKey;
             Session.ScanResult = result;
-            Session.Tests.Clear();
+            OfferSavedAnswers(deviceKey, isFirstScan: _scanCount == 0);
+            _scanCount++;
             ScanSummaryText = result.WasCancelled
                 ? "Scan cancelled. Some details are missing."
                 : $"Scanned in {result.Duration.TotalSeconds:0.0} s" + (result.Issues.Count > 0 ? $" · {result.Issues.Count} note{(result.Issues.Count == 1 ? string.Empty : "s")}" : string.Empty);
