@@ -1,3 +1,5 @@
+<img src="assets/logo.svg" alt="SellSpec logo" width="88">
+
 # SellSpec
 
 [![CI](https://github.com/SamJustSam-create/SellSpec/actions/workflows/ci.yml/badge.svg)](https://github.com/SamJustSam-create/SellSpec/actions/workflows/ci.yml)

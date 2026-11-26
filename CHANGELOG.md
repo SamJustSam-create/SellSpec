@@ -13,6 +13,7 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 - Code signing policy (`CODE_SIGNING_POLICY.md`) and SignPath Foundation signing in the release workflow: `build/signing.ps1` stages the executables under fixed names, the SignPath action submits them with origin verification and waits for manual approval, and the script verifies every returned file (valid, timestamped, signed by SignPath Foundation) before replacing the executables and rebuilding the zip and checksums. The steps run only when the SignPath repository variables are set and fail the release on any signing error.
 
 ### Changed
+- New logo: a tilted price tag carrying a short spec list, drawn as a vector master (`assets/logo.svg`) that `build/make-icon.ps1` now renders with WPF into the application icon and the sidebar image.
 - Release notes state whether the executables are signed and link the code signing policy.
 - The release job checks that the tag still points at the commit that was built, before creating and again before publishing the release.
 - The portable zip now ships `LICENSE`, `CODE_SIGNING_POLICY.md` and `PRIVACY.md` beside the README.
