@@ -1,0 +1,107 @@
+name: Release
+
+# Pushing a tag such as v0.2.0-alpha or v1.0.0 builds, tests and publishes SellSpec, then creates a GitHub
+# release with the artifacts and SHA256SUMS.txt attached. Tags containing a hyphen are marked pre-release.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+env:
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_NOLOGO: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+
+jobs:
+  release:
+    name: Publish and release
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~\.nuget\packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props', 'global.json') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Check that the tag matches the version in Directory.Build.props
+        shell: pwsh
+        run: |
+          $props = [xml](Get-Content Directory.Build.props)
+          $prefix = $props.Project.PropertyGroup.VersionPrefix | Where-Object { $_ } | Select-Object -First 1
+          $suffix = $props.Project.PropertyGroup.VersionSuffix | Where-Object { $_ } | Select-Object -First 1
+          $version = if ($suffix) { "$prefix-$suffix" } else { $prefix }
+          $tag = '${{ github.ref_name }}'.TrimStart('v')
+          if ($tag -ne $version) {
+            Write-Error "Tag '${{ github.ref_name }}' does not match the project version '$version'. Update Directory.Build.props (and CHANGELOG.md) before tagging."
+            exit 1
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+        id: version
+
+      - name: Restore
+        run: dotnet restore SellSpec.slnx
+
+      - name: Build (Release)
+        run: dotnet build SellSpec.slnx -c Release --no-restore
+
+      - name: Test
+        run: dotnet test SellSpec.slnx -c Release --no-build --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Publish artifacts
+        shell: pwsh
+        run: ./build/publish.ps1 -SkipTests
+
+      # ---------------------------------------------------------------------------------------------
+      # Code signing goes here once a certificate exists (see DEVELOPMENT.md, "Code signing").
+      # For Azure Trusted Signing, add the azure/trusted-signing-action step with the endpoint, account
+      # and certificate profile stored as repository secrets, sign artifacts/*.exe and the SellSpec.exe
+      # inside the portable folder, re-create the zip, then re-run build/checksums.ps1.
+      # Never commit certificates or passwords; never claim artifacts are signed when this step is absent.
+      # ---------------------------------------------------------------------------------------------
+
+      - name: Upload artifacts to the workflow run
+        uses: actions/upload-artifact@v4
+        with:
+          name: SellSpec-${{ steps.version.outputs.version }}-win-x64
+          path: |
+            artifacts/*.zip
+            artifacts/*.exe
+            artifacts/SHA256SUMS.txt
+          retention-days: 30
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: SellSpec ${{ steps.version.outputs.version }}
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          generate_release_notes: true
+          body: |
+            SellSpec ${{ steps.version.outputs.version }} for Windows 10/11 (64-bit). See CHANGELOG.md for details and KNOWN_LIMITATIONS.md for what is still partial or estimated.
+
+            | File | Needs |
+            |---|---|
+            | `SellSpec-${{ steps.version.outputs.version }}-win-x64-selfcontained.exe` | nothing |
+            | `SellSpec-${{ steps.version.outputs.version }}-win-x64-singlefile.exe` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) |
+            | `SellSpec-${{ steps.version.outputs.version }}-win-x64-portable.zip` | .NET Desktop Runtime 10; keeps settings beside the exe |
+
+            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`). The binaries are not code-signed; Windows SmartScreen may warn on first launch.
+          files: |
+            artifacts/*.zip
+            artifacts/*.exe
+            artifacts/SHA256SUMS.txt
+          fail_on_unmatched_files: true

@@ -62,6 +62,30 @@ WPF cannot be IL-trimmed, so the self-contained build carries the whole desktop 
 
 `Directory.Build.props` holds `VersionPrefix` (e.g. `0.1.0`) and `VersionSuffix` (`alpha`, `beta`, `rc1`, or empty for a release). The value flows into the assembly informational version, the About page, reports and artifact names. Update `CHANGELOG.md` with every version bump.
 
+## Continuous integration
+
+Two GitHub Actions workflows live in `.github/workflows/`:
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci.yml` | every push and pull request to `main`, or manually | restores, builds in Release and runs the whole test suite on `windows-latest`; uploads the `.trx` results as an artifact. The real-hardware integration tests run against the GitHub runner VM |
+| `release.yml` | a pushed tag matching `v*` | checks that the tag equals the version in `Directory.Build.props`, builds and tests, runs `build\publish.ps1 -SkipTests`, uploads the artifacts to the run, and creates a GitHub release with the zip, both executables and `SHA256SUMS.txt` attached. Tags containing a hyphen (`v0.2.0-alpha`) become pre-releases |
+
+### Cutting a release
+
+1. Set `VersionPrefix` and `VersionSuffix` in `Directory.Build.props` (empty suffix for a stable release).
+2. Add the version's section to `CHANGELOG.md` and commit to `main` (through a pull request so `ci.yml` runs).
+3. Tag and push:
+
+   ```powershell
+   git tag -a v0.2.0-alpha -m "SellSpec 0.2.0-alpha"
+   git push origin v0.2.0-alpha
+   ```
+
+4. Watch the *Release* workflow; when it finishes, review the generated release page and edit the notes if needed.
+
+If the tag and the version disagree the workflow stops before building, so a mislabeled release cannot be published. The signing step is a commented placeholder in `release.yml` until a certificate exists (see below).
+
 ## Code signing
 
 The artifacts are **not signed**. To sign future releases:
