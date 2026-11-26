@@ -4,10 +4,9 @@ Thanks for helping make SellSpec more accurate. Hardware detection is the hard p
 
 ## Reporting a detection problem
 
-1. Open SellSpec, go to Specifications, tick *Show technical details*.
-2. Note the raw manufacturer/model/version strings, the raw processor and graphics names, chassis codes and anything that looks wrong.
-3. Export the JSON report (it contains no identifiers) and attach it, together with the device's official spec sheet or a photo of its label (cover serial numbers).
-4. Include the sanitised log from Settings → *Open log folder* if the scan reported a problem.
+1. In SellSpec go to Settings → *Report a detection problem*, describe what was wrong, and press **Save diagnostics bundle**. The zip holds the public JSON report, a raw detection dump (firmware strings, codes, provenance and notes for every component), the scan notes and today's sanitised log. It never contains serial numbers, addresses, user names or personal files; every file is checked before it is written.
+2. Press **Open the report form on GitHub** (or go to [New issue → Detection report](https://github.com/SamJustSam-create/SellSpec/issues/new/choose)), fill in the device, the Windows version, what SellSpec showed and what the correct value is, with a link to the maker's spec sheet if you have one, and attach the bundle.
+3. For crashes or other misbehaviour use the **Bug report** form instead.
 
 ## Development workflow
 

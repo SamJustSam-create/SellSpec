@@ -2,6 +2,16 @@
 
 All notable changes to SellSpec are recorded here. The format follows Keep a Changelog; versions follow SemVer.
 
+## [Unreleased]
+
+### Added
+- Settings → *Report a detection problem*: saves a diagnostics bundle (public JSON report, raw detection dump with firmware strings, codes, provenance and notes, scan issues, today's sanitised log, optional description) as a zip for attaching to a GitHub report. Every entry is redaction-checked; identifiers are never included. A button opens the GitHub issue form, the only web address SellSpec ever opens.
+- "Something wrong? Report a detection problem" link on the Overview page.
+- GitHub issue forms for detection reports and bug reports, with links to the detection methods and known limitations.
+
+### Fixed
+- The export redaction check no longer flags the sanitiser's own `C:\Users\[user]` placeholder as a leak.
+
 ## [0.1.1-alpha] – 2026-11-26
 
 Infrastructure release; no functional change to the application.

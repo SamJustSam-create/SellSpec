@@ -64,6 +64,7 @@ public static partial class Redactor
     [GeneratedRegex(@"\b[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}-[A-Z0-9]{5}\b")]
     private static partial Regex ProductKey();
 
-    [GeneratedRegex(@"[A-Za-z]:\\Users\\[^\\\s]+", RegexOptions.IgnoreCase)]
+    // "C:\Users\[user]\..." is what LogSanitiser leaves behind and is already redacted, so it is excluded here.
+    [GeneratedRegex(@"[A-Za-z]:\\Users\\(?!\[user\])[^\\\s]+", RegexOptions.IgnoreCase)]
     private static partial Regex WindowsUserPath();
 }

@@ -56,6 +56,10 @@ public sealed partial class SettingsViewModel : ObservableObject
         _shell = shell;
         Marketplaces = new ObservableCollection<MarketplaceOption>(Enum.GetValues<Marketplace>().Select(m => new MarketplaceOption(m, MarketplaceTemplate.DisplayName(m))));
         Load(shell.Session.Settings);
+        shell.Session.PropertyChanged += (_, e) =>
+        {
+            if (e.PropertyName == nameof(AppSession.ScanResult)) OnPropertyChanged(nameof(CanSaveDiagnostics));
+        };
     }
 
     public ObservableCollection<MarketplaceOption> Marketplaces { get; }
@@ -77,6 +81,13 @@ public sealed partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _showProvenanceLabels;
     [ObservableProperty] private string? _statusMessage;
 
+    // Detection problem reporting (not persisted; excluded from settings saves).
+    [ObservableProperty] private string _diagnosticsNotes = string.Empty;
+    [ObservableProperty] private string? _diagnosticsStatus;
+
+    public bool CanSaveDiagnostics => _shell.Session.ScanResult is not null;
+    public string IssueTrackerUrl => ExternalLauncher.IssueTrackerUrl;
+
     private void Load(AppSettings s)
     {
         _loading = true;
@@ -97,8 +108,68 @@ public sealed partial class SettingsViewModel : ObservableObject
     protected override void OnPropertyChanged(System.ComponentModel.PropertyChangedEventArgs e)
     {
         base.OnPropertyChanged(e);
-        if (_loading || e.PropertyName == nameof(StatusMessage)) return;
+        if (_loading || e.PropertyName is nameof(StatusMessage) or nameof(DiagnosticsNotes) or nameof(DiagnosticsStatus) or nameof(CanSaveDiagnostics)) return;
         Save();
+    }
+
+    [RelayCommand]
+    private void SaveDiagnosticsBundle()
+    {
+        var result = _shell.Session.ScanResult;
+        if (result is null)
+        {
+            DiagnosticsStatus = "Scan the device first.";
+            return;
+        }
+
+        string? logText = null;
+        if (_shell.Logger is FileScanLogger { CurrentFile: { } logFile } && System.IO.File.Exists(logFile))
+        {
+            try
+            {
+                using var stream = new System.IO.FileStream(logFile, System.IO.FileMode.Open, System.IO.FileAccess.Read, System.IO.FileShare.ReadWrite);
+                using var reader = new System.IO.StreamReader(stream);
+                logText = reader.ReadToEnd();
+            }
+            catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+            {
+                logText = null;
+            }
+        }
+
+        Core.Diagnostics.DiagnosticsBundle bundle;
+        try
+        {
+            bundle = Core.Diagnostics.DiagnosticsBundleBuilder.Build(new Core.Diagnostics.DiagnosticsBundleRequest(result, AppInfo.Version, logText, DiagnosticsNotes));
+        }
+        catch (Core.Privacy.RedactionException ex)
+        {
+            DiagnosticsStatus = "Not saved: your notes contain " + string.Join(", ", ex.Findings) + ". Please remove it; the bundle must not carry identifiers.";
+            return;
+        }
+
+        var name = $"SellSpec diagnostics - {result.Snapshot.Identity.DisplayName} - {DateTime.Now:yyyy-MM-dd}";
+        var path = _shell.Export.AskForPath(name, "Zip archive (*.zip)|*.zip", ".zip");
+        if (path is null) return;
+        try
+        {
+            _shell.Export.WriteBytes(path, bundle.Zip, bundle.CombinedText, result.Snapshot.Private);
+            _shell.RememberExportFolder();
+            DiagnosticsStatus = $"Saved {System.IO.Path.GetFileName(path)} ({bundle.Zip.Length / 1024.0:0.#} KB). Attach it to a detection report on GitHub.";
+        }
+        catch (Exception ex) when (ex is System.IO.IOException or UnauthorizedAccessException)
+        {
+            DiagnosticsStatus = "The file could not be saved to that location.";
+        }
+    }
+
+    [RelayCommand]
+    private void OpenIssueTracker()
+    {
+        if (!ExternalLauncher.OpenUri(ExternalLauncher.IssueTrackerUrl))
+        {
+            DiagnosticsStatus = $"Your browser could not be opened. Visit {ExternalLauncher.IssueTrackerUrl} manually.";
+        }
     }
 
     private void Save()
