@@ -4,17 +4,26 @@ name: Release
 # release with the artifacts and SHA256SUMS.txt attached. Tags containing a hyphen are marked pre-release.
 #
 # Safety rules enforced below:
-#   - the tag must have the form v<major>.<minor>.<patch>[-<suffix>] and equal the version in Directory.Build.props;
+#   - the tag must have the exact form v<major>.<minor>.<patch>[-<suffix>] and equal the version in
+#     Directory.Build.props (case-sensitive);
 #   - the tagged commit must already be on main (no releases from unreviewed branches);
 #   - the tag name is never interpolated into shell or PowerShell source;
+#   - building runs in a read-only job; only the small release job holds `contents: write`, and it never
+#     runs the build toolchain or third-party build actions;
+#   - the release is created as a draft and published only after every asset uploaded;
+#   - runs for the same tag are serialised so two runs cannot interleave their uploads;
 #   - every action is pinned to a full commit SHA (Dependabot proposes updates).
 
 on:
   push:
     tags: ['v*']
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
-  contents: write
+  contents: read
 
 env:
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
@@ -22,10 +31,14 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
 
 jobs:
-  release:
-    name: Publish and release
+  build:
+    name: Verify, build, test and publish
     runs-on: windows-latest
     timeout-minutes: 45
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
     steps:
       - name: Check out
@@ -37,8 +50,10 @@ jobs:
       - name: Require the tagged commit to be on main
         shell: pwsh
         run: |
-          git fetch --no-tags origin main
-          git merge-base --is-ancestor HEAD origin/main
+          # Fetch main into its remote-tracking ref explicitly so the check always sees the branch as it is now.
+          git fetch --no-tags origin +refs/heads/main:refs/remotes/origin/main
+          if ($LASTEXITCODE -ne 0) { Write-Error 'Could not fetch main.'; exit 1 }
+          git merge-base --is-ancestor HEAD refs/remotes/origin/main
           if ($LASTEXITCODE -ne 0) {
             Write-Error "The tagged commit is not on main. Merge it through a pull request first, then tag the merged commit."
             exit 1
@@ -51,7 +66,8 @@ jobs:
           TAG_NAME: ${{ github.ref_name }}
         run: |
           $tag = $env:TAG_NAME
-          if ($tag -notmatch '^v(?<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.]*)?)$') {
+          # Case-sensitive: "V1.0.0" or "v1.0.0-Alpha" must not pass as the canonical tag.
+          if (-not ($tag -cmatch '^v(?<version>\d+\.\d+\.\d+(?:-[0-9A-Za-z][0-9A-Za-z.]*)?)$')) {
             Write-Error "Tag '$tag' does not match the required format v<major>.<minor>.<patch>[-<suffix>]."
             exit 1
           }
@@ -68,7 +84,7 @@ jobs:
           }
           $version = if ($suffix) { "$prefix-$suffix" } else { $prefix }
 
-          if ($tagVersion -ne $version) {
+          if ($tagVersion -cne $version) {
             Write-Error "Tag '$tag' does not match the project version '$version'. Update Directory.Build.props (and CHANGELOG.md) before tagging."
             exit 1
           }
@@ -117,22 +133,43 @@ jobs:
             artifacts/*.zip
             artifacts/*.exe
             artifacts/SHA256SUMS.txt
+          if-no-files-found: error
           retention-days: 30
 
-      - name: Create GitHub release
+  release:
+    name: Create GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download the built artifacts
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: SellSpec-${{ needs.build.outputs.version }}-win-x64
+          path: artifacts
+
+      - name: List release files
+        run: ls -l artifacts
+
+      # The release is created as a draft so that nothing becomes public until every asset is attached.
+      - name: Create draft release with all assets
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
-          name: SellSpec ${{ steps.version.outputs.version }}
+          draft: true
+          name: SellSpec ${{ needs.build.outputs.version }}
           prerelease: ${{ contains(github.ref_name, '-') }}
           generate_release_notes: true
           body: |
-            SellSpec ${{ steps.version.outputs.version }} for Windows 10/11 (64-bit). See CHANGELOG.md for details and KNOWN_LIMITATIONS.md for what is still partial or estimated.
+            SellSpec ${{ needs.build.outputs.version }} for Windows 10/11 (64-bit). See CHANGELOG.md for details and KNOWN_LIMITATIONS.md for what is still partial or estimated.
 
             | File | Needs |
             |---|---|
-            | `SellSpec-${{ steps.version.outputs.version }}-win-x64-selfcontained.exe` | nothing |
-            | `SellSpec-${{ steps.version.outputs.version }}-win-x64-singlefile.exe` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) |
-            | `SellSpec-${{ steps.version.outputs.version }}-win-x64-portable.zip` | .NET Desktop Runtime 10; keeps settings beside the exe |
+            | `SellSpec-${{ needs.build.outputs.version }}-win-x64-selfcontained.exe` | nothing |
+            | `SellSpec-${{ needs.build.outputs.version }}-win-x64-singlefile.exe` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) |
+            | `SellSpec-${{ needs.build.outputs.version }}-win-x64-portable.zip` | .NET Desktop Runtime 10; keeps settings beside the exe |
 
             Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`). The binaries are not code-signed; Windows SmartScreen may warn on first launch.
           files: |
@@ -140,3 +177,9 @@ jobs:
             artifacts/*.exe
             artifacts/SHA256SUMS.txt
           fail_on_unmatched_files: true
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: gh release edit "$TAG_NAME" --repo "$GITHUB_REPOSITORY" --draft=false

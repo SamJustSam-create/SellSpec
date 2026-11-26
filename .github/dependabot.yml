@@ -7,9 +7,17 @@ updates:
       interval: monthly
     commit-message:
       prefix: "ci"
+
+  # The project files live under src/ and tests/, not at the repository root.
   - package-ecosystem: nuget
-    directory: /
+    directories:
+      - "/src/*"
+      - "/tests/*"
     schedule:
       interval: monthly
     commit-message:
       prefix: "deps"
+    groups:
+      nuget-packages:
+        patterns:
+          - "*"

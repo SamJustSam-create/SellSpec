@@ -69,9 +69,9 @@ Two GitHub Actions workflows live in `.github/workflows/`:
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `ci.yml` | every push and pull request to `main`, or manually | restores, builds in Release and runs the whole test suite on `windows-latest`; uploads the `.trx` results as an artifact. The real-hardware integration tests run against the GitHub runner VM |
-| `release.yml` | a pushed tag matching `v*` | requires the tagged commit to be on `main`, checks that the tag has the form `v<major>.<minor>.<patch>[-<suffix>]` and equals the version in `Directory.Build.props`, builds and tests, runs `build\publish.ps1 -SkipTests`, uploads the artifacts to the run, and creates a GitHub release with the zip, both executables and `SHA256SUMS.txt` attached. Tags containing a hyphen (`v0.2.0-alpha`) become pre-releases |
+| `release.yml` | a pushed tag matching `v*` | two jobs. A **read-only build job** requires the tagged commit to be on `main`, checks that the tag has the exact (case-sensitive) form `v<major>.<minor>.<patch>[-<suffix>]` and equals the version in `Directory.Build.props`, builds and tests, runs `build\publish.ps1 -SkipTests` and uploads the artifacts. A separate **release job**, the only one with write access, downloads those artifacts, creates a *draft* release with the zip, both executables and `SHA256SUMS.txt`, and publishes it only once every asset is attached. Tags containing a hyphen (`v0.2.0-alpha`) become pre-releases; runs for the same tag are serialised |
 
-Both workflows pin every action to a full commit SHA (the version is in a trailing comment) and `.github/dependabot.yml` proposes monthly updates for actions and NuGet packages. The tag name is passed to scripts through an environment variable, never interpolated into script source.
+Both workflows pin every action to a full commit SHA (the version is in a trailing comment) and `.github/dependabot.yml` proposes monthly updates for actions and for the NuGet packages under `src/` and `tests/` (grouped into one pull request). The tag name is passed to scripts through an environment variable, never interpolated into script source.
 
 ### Cutting a release
 
