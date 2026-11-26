@@ -10,7 +10,7 @@
   </ItemGroup>
   <ItemGroup>
     <!-- WMI/CIM access for .NET (MIT licence, Microsoft). -->
-    <PackageReference Include="System.Management" Version="10.0.0" />
+    <PackageReference Include="System.Management" Version="11.0.0" />
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="SellSpec.Windows.Tests" />
