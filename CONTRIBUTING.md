@@ -23,7 +23,11 @@ Thanks for helping make SellSpec more accurate. Hardware detection is the hard p
 
 ## Licence of contributions
 
-The project's distribution licence has not been finalised. Until it is, contributions are accepted on the understanding that they may be included in both free and commercial versions of SellSpec. Please state in the pull request that you agree.
+SellSpec is released under the [MIT Licence](LICENSE). By opening a pull request you agree that your contribution is licensed under the same terms. Only submit code you are entitled to license this way, and do not add dependencies whose licences are not permissive (see DEVELOPMENT.md).
+
+## Maintainers
+
+Maintainers hold the roles listed in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md). They use multi-factor authentication on GitHub and SignPath, review every pull request from a non-committer before merging it, and approve a release signing request only after checking the tag, the commit and the build.
 
 ## Security issues
 

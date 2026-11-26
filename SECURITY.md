@@ -28,6 +28,10 @@ Three runtime dependencies, all from Microsoft / the .NET Foundation under the M
 - Speaker: an original sine tone is generated in memory.
 - Display and keyboard tests are plain WPF windows; the keyboard test only records which keys were pressed, never text.
 
+## Release integrity
+
+Releases are built only by the tag-driven GitHub Actions workflow, from a commit on `main`, on GitHub-hosted runners, with every action pinned to a commit SHA. `SHA256SUMS.txt` lists the checksum of every asset. Once SignPath Foundation approves the project, the executables are code-signed as described in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md): the signing service verifies that the build came from this repository's workflow, a maintainer approves each request by hand, and the workflow refuses to publish if any signature is missing or invalid. Each release's notes state whether its executables are signed.
+
 ## Reporting a vulnerability
 
 Open a private report with the maintainers (see CONTRIBUTING.md) rather than a public issue. Include the SellSpec version from the About page and the sanitised log from Settings → *Open log folder* if relevant. Please do not include serial numbers or personal data in reports.

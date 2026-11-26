@@ -30,7 +30,7 @@ Designed for but not implemented. Each slots in without touching Core's public m
 - Marketplace integrations – posting APIs are explicit opt-in network features.
 - Cloud sync, multi-device management, business APIs – opt-in, account-based, separate product tier.
 - Additional operating systems – new provider packages implementing the same `IHardwareProvider<T>` interfaces, plus a UI per platform.
-- Commercial licensing – a licence check that gates professional features only; the free workflow must keep working without it.
+- ~~Commercial licensing~~ – dropped in November 2026. SellSpec is MIT-licensed and its releases are to be signed under SignPath Foundation's open-source terms, which exclude commercial dual-licensing; any paid offering would have to be a separate product outside the signed releases.
 
 ## Explicitly out of scope for now
 

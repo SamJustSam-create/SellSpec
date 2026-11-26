@@ -78,3 +78,13 @@ Short records of the choices that shaped the MVP, with the alternatives consider
 
 **Decision.** `--capture` renders every page and writes sample exports, then exits.
 **Why.** It lets UI changes be reviewed without a screen or a GUI automation stack, and produced the documentation screenshots. It runs the production code paths; it does not inject data.
+
+## ADR-16: MIT licence
+
+**Decision.** SellSpec is released under the MIT Licence; contributions are accepted under the same terms. The earlier "licence not chosen, commercial version possible" stance is withdrawn.
+**Why.** Free code signing through SignPath Foundation requires an OSI-approved licence with no commercial dual-licensing, and SellSpec's maintainers cannot obtain a certificate of their own (a certificate authority validates an adult individual or an organisation; Azure Artifact Signing's individual route is limited to the United States and Canada). MIT is the licence of the project's only dependencies, is the most common choice for .NET desktop tools, and keeps forks and packaging (winget, Scoop, Chocolatey) frictionless.
+
+## ADR-17: Code signing by SignPath Foundation, failing closed
+
+**Decision.** Executables are signed inside the release workflow by SignPath Foundation with origin verification and manual approval. `build/signing.ps1` stages the files under fixed names, then verifies every returned file (valid, timestamped, certificate common name exactly "SignPath Foundation") before replacing the executables and rebuilding the zip and checksums. The release job re-checks that the tag still points at the built commit before creating and before publishing the release. The steps run only when the SignPath repository variables are set; once set, any signing failure fails the release.
+**Why.** No private key exists anywhere the project controls, so nothing can leak from the repository or a maintainer's machine. Fixed staging names keep SignPath's artifact configuration independent of the version. Failing closed means a release can never be published half-signed or silently unsigned; a release without signing is possible only while signing is not configured, and its notes say so.
