@@ -4,7 +4,7 @@ SellSpec's release executables are to be code-signed through [SignPath Foundatio
 
 > Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).
 
-**Status.** Not yet signed. SellSpec is applying to SignPath Foundation; every release's notes state whether its executables are signed, and this page will name the first signed release when it ships. Releases up to and including 0.1.1-alpha are unsigned.
+**Status.** Not yet signed. SellSpec is applying to SignPath Foundation; every release's notes state whether its executables are signed, and this page will name the first signed release when it ships. Releases up to and including 0.1.2-alpha are unsigned.
 
 ## What is signed
 

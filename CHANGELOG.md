@@ -2,7 +2,9 @@
 
 All notable changes to SellSpec are recorded here. The format follows Keep a Changelog; versions follow SemVer.
 
-## [Unreleased]
+## [0.1.2-alpha] – 2026-11-27
+
+First release under the MIT licence, with the new logo and the field-report and remembered-answers features. Executables are still unsigned; see CODE_SIGNING_POLICY.md.
 
 ### Added
 - Remembered answers: questionnaire answers and hardware test results are saved per device model in `answers.json` in the data folder a moment after they change, and offered back (Restore / Discard) when the same model is scanned again; an administrator rescan restores them automatically. The file is keyed by public model identity only, is redaction-checked on every write, and is never written for the demonstration device or an unidentifiable device. Settings gains *Remember questionnaire answers and hardware test results* (turning it off deletes the file) and *Clear remembered answers*.

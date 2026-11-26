@@ -121,7 +121,7 @@ docs/                          hardware detection methods, decisions, manual tes
 
 ## Code signing policy
 
-Release executables are to be signed through SignPath Foundation's free programme for open-source projects. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) lists what is signed, how a release is built and approved, the team roles, and how to verify a signature. Releases up to and including 0.1.1-alpha are unsigned; the policy names the first signed release when it ships.
+Release executables are to be signed through SignPath Foundation's free programme for open-source projects. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) lists what is signed, how a release is built and approved, the team roles, and how to verify a signature. Releases up to and including 0.1.2-alpha are unsigned; the policy names the first signed release when it ships.
 
 ## Licence
 
