@@ -57,7 +57,11 @@ Release artifacts are produced by `build\publish.ps1` into `artifacts\`:
 
 Measured sizes for the current build are listed in [TESTING.md](TESTING.md#performance-measurements). Checksums are in `artifacts\SHA256SUMS.txt`.
 
-Release executables are to be code-signed by SignPath Foundation once the project is approved (see [Code signing policy](#code-signing-policy)). Until then Windows SmartScreen may warn on first launch, and each release's notes say whether its executables are signed.
+Release executables are not code-signed, so Windows SmartScreen may warn on first launch; the [Code signing policy](#code-signing-policy) section says why. Every release asset carries a GitHub build provenance attestation instead, checked by the release workflow before publishing. Verify a download yourself with the GitHub CLI:
+
+```powershell
+gh attestation verify .\SellSpec-<version>-win-x64-singlefile.exe --repo SamJustSam-create/SellSpec
+```
 
 If the .NET Desktop Runtime 10 is missing, the framework-dependent builds show Windows' standard "You must install or update .NET" dialog with a download link and exit; the self-contained build runs regardless. (Verified on the development machine, which has no machine-wide runtime.)
 
@@ -121,7 +125,7 @@ docs/                          hardware detection methods, decisions, manual tes
 
 ## Code signing policy
 
-Release executables are to be signed through SignPath Foundation's free programme for open-source projects. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org). [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) lists what is signed, how a release is built and approved, the team roles, and how to verify a signature. Releases up to and including 0.1.2-alpha are unsigned; the policy names the first signed release when it ships.
+Releases are not code-signed. SellSpec applied to [SignPath Foundation](https://signpath.org)'s free programme for open-source projects in November 2026 and was declined for now: the programme requires established public adoption (stars, forks, contributors, independent write-ups), which a project this new cannot show. The project will reapply once it has that record, and the release pipeline keeps its fail-closed signing steps ready, dormant until then. In the meantime every release asset carries a GitHub build provenance attestation proving it was built by this repository's release workflow from the tagged commit. [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) has the status, the build and approval steps, the team roles, and how to verify an attestation or, later, a signature.
 
 ## Licence
 

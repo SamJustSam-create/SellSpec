@@ -90,7 +90,7 @@ If the tag and the version disagree, the tag is malformed, or the tagged commit 
 
 ## Code signing
 
-Release executables are to be signed by [SignPath Foundation](https://signpath.org) through its free programme for open-source projects, once the project is approved and the repository is configured as described below; until then releases are unsigned. [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) is the public policy that programme requires. There is no certificate in this repository or on any maintainer's machine. Signing happens inside the release workflow, and SignPath signs only builds it can trace to a run of that workflow on this repository (origin verification).
+Release executables are not signed. SellSpec applied to [SignPath Foundation](https://signpath.org)'s free programme for open-source projects in November 2026 and was declined for now, because the programme requires established public adoption; the project will reapply when it has stars, forks, contributors or independent write-ups to show. Everything in this section stays in place for that day and is inert until the repository variables below are set. [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) is the public policy that programme requires; it also describes the build provenance attestations every release carries in the meantime (next subsection). There is no certificate in this repository or on any maintainer's machine. Signing happens inside the release workflow, and SignPath signs only builds it can trace to a run of that workflow on this repository (origin verification).
 
 How the workflow signs when it is configured:
 
@@ -98,7 +98,7 @@ How the workflow signs when it is configured:
 2. `build/signing.ps1 -Stage` copies the executables into `signing/unsigned` under fixed names (`SellSpec-singlefile.exe`, `SellSpec-selfcontained.exe`, `portable\SellSpec.exe`), and the workflow uploads that folder as a GitHub Actions artifact.
 3. `signpath/github-action-submit-signing-request` submits the artifact. The signing policy requires manual approval, so the step waits (up to an hour) for an approver to approve the request in SignPath.
 4. `build/signing.ps1 -Apply` verifies that every staged file came back with a valid, timestamped signature whose certificate common name is exactly "SignPath Foundation", copies the signed files over the unsigned ones, rebuilds the portable zip and regenerates `SHA256SUMS.txt`.
-5. The release job checks that the tag still points at the commit that was built (before creating the draft and again before publishing), then publishes. The release notes state that the executables are signed and carry the SignPath attribution.
+5. The build job attests the final assets (see the next subsection) and the release job verifies those attestations, checks that the tag still points at the commit that was built (before creating the draft and again before publishing), then publishes. The release notes state that the executables are signed and carry the SignPath attribution.
 
 The steps run only when the repository variable `SIGNPATH_ORGANIZATION_ID` is set. Without it (so also before SignPath Foundation has approved the project) the release is published unsigned and its notes say so. With it set, any signing failure fails the run: a half-signed or accidentally unsigned release cannot be published.
 
@@ -157,6 +157,12 @@ Copy-Item -Recurse signing\unsigned signing\signed
 ```
 
 Never commit certificates or tokens, never describe a release as signed when the signing step did not run, and never pass `-SkipSignatureCheck` in the workflow.
+
+### Build provenance attestations
+
+Independently of signing, the build job attests every release asset with GitHub's [`actions/attest`](https://github.com/actions/attest) (pinned by commit) after `publish.ps1` has run and, when signing is active, after `signing.ps1 -Apply` has replaced the executables. GitHub stores a Sigstore-signed SLSA provenance statement that binds each file's SHA-256 digest to this repository, the release workflow file, the tagged commit and the GitHub-hosted runner that built it. For this the build job holds `id-token: write` (to obtain the OIDC token Sigstore exchanges for a short-lived signing certificate) and `attestations: write` (to store the result with GitHub) in addition to `contents: read`; it still cannot write to the repository.
+
+Before it creates the draft release, the release job runs `gh attestation verify` on every downloaded asset with `--repo`, `--signer-workflow <owner>/<repo>/.github/workflows/release.yml`, `--source-ref refs/tags/<tag>` and `--deny-self-hosted-runners`, so an asset without a matching attestation is never published. Users repeat the check with `gh attestation verify <file> --repo SamJustSam-create/SellSpec`; the attestations are also listed at `https://github.com/SamJustSam-create/SellSpec/attestations`. Attestations are free for public repositories and involve no certificate or key of the project's own, but Windows does not read them, so they do not affect SmartScreen.
 
 ## Coding conventions
 

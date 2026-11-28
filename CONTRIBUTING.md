@@ -27,7 +27,7 @@ SellSpec is released under the [MIT Licence](LICENSE). By opening a pull request
 
 ## Maintainers
 
-Maintainers hold the roles listed in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md). They use multi-factor authentication on GitHub and SignPath, review every pull request from a non-committer before merging it, and approve a release signing request only after checking the tag, the commit and the build.
+Maintainers hold the roles listed in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md). They use multi-factor authentication on GitHub and on any signing service the project uses, review every pull request from a non-committer before merging it, and approve a release signing request only after checking the tag, the commit and the build.
 
 ## Security issues
 

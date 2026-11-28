@@ -8,8 +8,9 @@ name: Release
 #     Directory.Build.props (case-sensitive);
 #   - the tagged commit must already be on main (no releases from unreviewed branches);
 #   - the tag name is never interpolated into shell or PowerShell source;
-#   - building runs in a read-only job; only the small release job holds `contents: write`, and it never
-#     runs the build toolchain or third-party build actions;
+#   - the build job cannot write to the repository: it holds `contents: read` plus the `id-token` and
+#     `attestations` permissions needed to attest its assets; only the small release job holds
+#     `contents: write`, and it never runs the build toolchain or third-party build actions;
 #   - the release is created as a draft and published only after every asset uploaded;
 #   - runs for the same tag are serialised so two runs cannot interleave their uploads;
 #   - the release job checks, before creating and again before publishing the release, that the tag still
@@ -24,6 +25,13 @@ name: Release
 # unsigned release can only be produced when signing is not configured, and its notes then say so. The
 # SignPath API token is exposed to that one step only; the build job holds `actions: read` so SignPath can
 # fetch the artifact with the workflow token.
+#
+# Build provenance (CODE_SIGNING_POLICY.md, "What is verified today"): after publishing (and signing, when
+# configured) the build job attests every release asset with actions/attest. GitHub then holds a
+# Sigstore-signed statement that a file with that digest was built by this workflow, from this commit, on a
+# GitHub-hosted runner. The release job verifies the attestation of every downloaded asset before it creates
+# the draft, so an asset GitHub cannot vouch for is never published. Anyone can repeat the check with
+# `gh attestation verify <file> --repo SamJustSam-create/SellSpec`.
 
 on:
   push:
@@ -43,13 +51,15 @@ env:
 
 jobs:
   build:
-    name: Verify, build, test, publish and sign
+    name: Verify, build, test, publish, sign and attest
     runs-on: windows-latest
     # Generous because release signing waits for a human approval in SignPath (up to an hour).
     timeout-minutes: 90
     permissions:
       contents: read
       actions: read
+      id-token: write      # OIDC token for the Sigstore signing certificate behind the attestation
+      attestations: write  # store the attestation with GitHub
     outputs:
       version: ${{ steps.version.outputs.version }}
       signed: ${{ steps.apply-signed.outcome == 'success' }}
@@ -167,6 +177,16 @@ jobs:
         run: ./build/signing.ps1 -Apply -ArtifactsDirectory artifacts -SignedDirectory signing/signed
       # ------------------------------------------------------------------------------------------------
 
+      # Attest the final assets (signed or not), including the zip and the checksum file, which an
+      # Authenticode signature cannot cover. The release job refuses to publish an asset without one.
+      - name: Attest the build provenance of the release assets
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: |
+            artifacts/*.zip
+            artifacts/*.exe
+            artifacts/SHA256SUMS.txt
+
       - name: Upload artifacts to the workflow run
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -195,6 +215,26 @@ jobs:
 
       - name: List release files
         run: ls -l artifacts
+
+      # Every asset must carry a provenance attestation made by this workflow file, in this repository, for
+      # this tag, on a GitHub-hosted runner. A missing asset or a missing attestation stops the release.
+      - name: Verify the provenance attestation of every asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          for f in artifacts/*.zip artifacts/*.exe artifacts/SHA256SUMS.txt; do
+            if [ ! -f "$f" ]; then
+              echo "::error::Release asset '$f' is missing from the downloaded artifacts."
+              exit 1
+            fi
+            gh attestation verify "$f" \
+              --repo "$GITHUB_REPOSITORY" \
+              --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml" \
+              --source-ref "refs/tags/$TAG_NAME" \
+              --deny-self-hosted-runners
+          done
 
       # A tag moved while the build job waited for the signing approval would otherwise attach binaries built
       # from one commit to a release that names another. Check before creating anything, and again before
@@ -233,7 +273,7 @@ jobs:
             | `SellSpec-${{ needs.build.outputs.version }}-win-x64-singlefile.exe` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) |
             | `SellSpec-${{ needs.build.outputs.version }}-win-x64-portable.zip` | .NET Desktop Runtime 10; keeps settings beside the exe |
 
-            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`).
+            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`). Every asset also carries a GitHub build provenance attestation, verified by the workflow before this release was published; check one yourself with the GitHub CLI: `gh attestation verify <file> --repo ${{ github.repository }}`.
 
             ${{ needs.build.outputs.signed == 'true' && 'The executables are code-signed by SignPath Foundation. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).' || 'The executables are not code-signed, so Windows SmartScreen may warn on first launch.' }} See the [Code signing policy](https://github.com/SamJustSam-create/SellSpec/blob/main/CODE_SIGNING_POLICY.md).
           files: |
