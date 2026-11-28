@@ -14,7 +14,7 @@ The MVP stays free and fully functional offline. Everything below is optional an
 | 0.6 alpha | In-app webcam preview (if a lightweight capture path is found), trackpad/touch test | |
 | 0.7 beta | Compatibility sweep: 10–20 devices, Windows 10, high DPI, VMs, ARM64 | |
 | 0.8 beta | Performance and security review, accessibility audit with Narrator | |
-| 0.9 RC | Signed artifacts, installer option (MSIX or Inno Setup), documentation freeze | |
+| 0.9 RC | Signed artifacts (if a signing route has opened by then), installer option (MSIX or Inno Setup), documentation freeze | |
 | 1.0 | Public release | |
 
 ## Candidate professional features (not in the MVP)
@@ -30,7 +30,7 @@ Designed for but not implemented. Each slots in without touching Core's public m
 - Marketplace integrations – posting APIs are explicit opt-in network features.
 - Cloud sync, multi-device management, business APIs – opt-in, account-based, separate product tier.
 - Additional operating systems – new provider packages implementing the same `IHardwareProvider<T>` interfaces, plus a UI per platform.
-- ~~Commercial licensing~~ – dropped in November 2026. SellSpec is MIT-licensed and its releases are to be signed under SignPath Foundation's open-source terms, which exclude commercial dual-licensing; any paid offering would have to be a separate product outside the signed releases.
+- ~~Commercial licensing~~ – dropped in November 2026. SellSpec is MIT-licensed, and the free open-source signing programmes it hopes to use (SignPath Foundation declined it for now, pending public adoption) exclude commercial dual-licensing; any paid offering would have to be a separate product outside these releases.
 
 ## Explicitly out of scope for now
 

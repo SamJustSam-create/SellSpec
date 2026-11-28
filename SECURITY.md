@@ -30,7 +30,7 @@ Three runtime dependencies, all from Microsoft / the .NET Foundation under the M
 
 ## Release integrity
 
-Releases are built only by the tag-driven GitHub Actions workflow, from a commit on `main`, on GitHub-hosted runners, with every action pinned to a commit SHA. `SHA256SUMS.txt` lists the checksum of every asset. Once SignPath Foundation approves the project, the executables are code-signed as described in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md): the signing service verifies that the build came from this repository's workflow, a maintainer approves each request by hand, and the workflow refuses to publish if any signature is missing or invalid. Each release's notes state whether its executables are signed.
+Releases are built only by the tag-driven GitHub Actions workflow, from a commit on `main`, on GitHub-hosted runners, with every action pinned to a commit SHA. `SHA256SUMS.txt` lists the checksum of every asset, and from the release after 0.1.2-alpha every asset also carries a GitHub build provenance attestation, which the workflow verifies before publishing (the `gh attestation verify` command in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) repeats the check). The executables are not code-signed: SignPath Foundation declined the project's application in November 2026 pending public adoption, and no other signing route is open to the maintainers. The fail-closed signing steps described in [CODE_SIGNING_POLICY.md](CODE_SIGNING_POLICY.md) stay dormant until one is. Each release's notes state whether its executables are signed.
 
 ## Reporting a vulnerability
 
