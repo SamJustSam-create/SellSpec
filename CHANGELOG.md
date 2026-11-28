@@ -5,7 +5,7 @@ All notable changes to SellSpec are recorded here. The format follows Keep a Cha
 ## [Unreleased]
 
 ### Added
-- Build provenance attestations: the release workflow attests every release asset (executables, portable zip and `SHA256SUMS.txt`) with GitHub's `actions/attest` and verifies each asset's attestation against the repository, the workflow file and the tag before publishing. Verify a download with `gh attestation verify <file> --repo SamJustSam-create/SellSpec`; the release notes and CODE_SIGNING_POLICY.md explain the check.
+- Build provenance attestations: the release workflow attests every release asset (executables, portable zip and `SHA256SUMS.txt`) with GitHub's `actions/attest` and verifies each asset's attestation against the repository, the workflow file and the tag before publishing. The release notes and CODE_SIGNING_POLICY.md carry the verification command, pinned to the release workflow and tag, and explain the check; releases up to 0.1.2-alpha have no attestations.
 
 ### Changed
 - Code signing status: SignPath Foundation declined SellSpec's application in November 2026 pending public adoption. The policy, README, security, limitations and development documents now say that releases are unsigned, that the signing steps stay dormant, and that the project will reapply; the SignPath attribution line was removed.

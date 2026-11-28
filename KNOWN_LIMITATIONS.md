@@ -34,7 +34,7 @@ Honest list of what is partial, estimated or not implemented in 0.1.0-alpha. Ite
 ## Platform
 
 - Windows 10 and 11, 64-bit only. Windows 10 shows Segoe MDL2 icons and Segoe UI instead of the Windows 11 fonts.
-- No installer, and the executables are unsigned: SignPath Foundation declined the project's application in November 2026 pending public adoption, and no other signing route is open to the maintainers (see CODE_SIGNING_POLICY.md). SmartScreen may warn on first launch. Release assets carry GitHub build provenance attestations instead.
+- No installer, and the executables are unsigned: SignPath Foundation declined the project's application in November 2026 pending public adoption, and no other signing route is open to the maintainers (see CODE_SIGNING_POLICY.md). SmartScreen may warn on first launch. Releases after 0.1.2-alpha carry GitHub build provenance attestations on every asset instead.
 - The self-contained build is large because WPF cannot be trimmed.
 
 ## Verified so far

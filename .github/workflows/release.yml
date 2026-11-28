@@ -30,8 +30,8 @@ name: Release
 # configured) the build job attests every release asset with actions/attest. GitHub then holds a
 # Sigstore-signed statement that a file with that digest was built by this workflow, from this commit, on a
 # GitHub-hosted runner. The release job verifies the attestation of every downloaded asset before it creates
-# the draft, so an asset GitHub cannot vouch for is never published. Anyone can repeat the check with
-# `gh attestation verify <file> --repo SamJustSam-create/SellSpec`.
+# the draft, so an asset GitHub cannot vouch for is never published. Anyone can repeat the check with the
+# `gh attestation verify` command in CODE_SIGNING_POLICY.md, which uses the same flags as the step below.
 
 on:
   push:
@@ -205,6 +205,7 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: write
+      attestations: read  # gh attestation verify fetches the attestations with the workflow token
 
     steps:
       - name: Download the built artifacts
@@ -273,7 +274,7 @@ jobs:
             | `SellSpec-${{ needs.build.outputs.version }}-win-x64-singlefile.exe` | [.NET Desktop Runtime 10](https://dotnet.microsoft.com/download/dotnet/10.0) |
             | `SellSpec-${{ needs.build.outputs.version }}-win-x64-portable.zip` | .NET Desktop Runtime 10; keeps settings beside the exe |
 
-            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`). Every asset also carries a GitHub build provenance attestation, verified by the workflow before this release was published; check one yourself with the GitHub CLI: `gh attestation verify <file> --repo ${{ github.repository }}`.
+            Verify downloads with `SHA256SUMS.txt` (`sha256sum -c SHA256SUMS.txt`). Every asset also carries a GitHub build provenance attestation, verified by the workflow before this release was published; check one yourself with the GitHub CLI, which pins the check to this repository's release workflow and this tag: `gh attestation verify SellSpec-${{ needs.build.outputs.version }}-win-x64-singlefile.exe --repo ${{ github.repository }} --signer-workflow ${{ github.repository }}/.github/workflows/release.yml --source-ref ${{ github.ref }} --deny-self-hosted-runners` (repeat for each file).
 
             ${{ needs.build.outputs.signed == 'true' && 'The executables are code-signed by SignPath Foundation. Free code signing provided by [SignPath.io](https://about.signpath.io), certificate by [SignPath Foundation](https://signpath.org).' || 'The executables are not code-signed, so Windows SmartScreen may warn on first launch.' }} See the [Code signing policy](https://github.com/SamJustSam-create/SellSpec/blob/main/CODE_SIGNING_POLICY.md).
           files: |

@@ -10,13 +10,14 @@ From the release after 0.1.2-alpha onwards, every asset of every release (the tw
 
 An attestation does not replace a code signature. Windows does not read it, so SmartScreen may still warn on first launch. It answers a different question, "did this file really come out of the SellSpec repository, unmodified?", and it answers it for the zip and the checksum file too, which an Authenticode signature cannot cover.
 
-Verify a download with a current [GitHub CLI](https://cli.github.com) (`gh`):
+Verify a download with a current [GitHub CLI](https://cli.github.com) (`gh`). The flags pin the check to this repository, its release workflow file, the tag of the release you downloaded and GitHub-hosted runners, so an attestation made by any other workflow or branch in the repository cannot satisfy it:
 
 ```powershell
-gh attestation verify .\SellSpec-<version>-win-x64-singlefile.exe --repo SamJustSam-create/SellSpec
+$version = '0.1.3-alpha'   # the release you downloaded, as shown on the Releases page
+gh attestation verify ".\SellSpec-$version-win-x64-singlefile.exe" --repo SamJustSam-create/SellSpec --signer-workflow SamJustSam-create/SellSpec/.github/workflows/release.yml --source-ref "refs/tags/v$version" --deny-self-hosted-runners
 ```
 
-The command succeeds, naming the workflow and the commit that built the file, only if GitHub holds a matching attestation for that exact file; a modified or re-packed file fails. The attestations of every release are listed at `https://github.com/SamJustSam-create/SellSpec/attestations`. Compare every download against `SHA256SUMS.txt` as well.
+Repeat it for each file you downloaded. The command succeeds, naming the workflow and the commit that built the file, only if GitHub holds a matching attestation for that exact file; a modified or re-packed file fails, and so does any asset of 0.1.2-alpha or earlier, which have no attestation. The attestations of every release are listed at `https://github.com/SamJustSam-create/SellSpec/attestations`. Compare every download against `SHA256SUMS.txt` as well.
 
 ## What is signed once signing is active
 
@@ -64,7 +65,8 @@ The full privacy policy is [PRIVACY.md](PRIVACY.md). Third-party components (the
 Once releases are signed, on any Windows PC:
 
 ```powershell
-Get-AuthenticodeSignature .\SellSpec-<version>-win-x64-singlefile.exe | Format-List Status, TimeStamperCertificate, SignerCertificate
+$version = '1.0.0'   # the release you downloaded
+Get-AuthenticodeSignature ".\SellSpec-$version-win-x64-singlefile.exe" | Format-List Status, TimeStamperCertificate, SignerCertificate
 ```
 
 `Status` must be `Valid` and the signer's subject must name the signer given in that release's notes. The same information is under *Properties → Digital Signatures* in Explorer, and `signtool verify /pa /v <file>` (Windows SDK) gives the same answer. Until then, use the attestation check above and `SHA256SUMS.txt`.

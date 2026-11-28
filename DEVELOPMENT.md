@@ -142,7 +142,8 @@ SignPath project settings the workflow relies on:
 Verifying a release on any Windows PC:
 
 ```powershell
-Get-AuthenticodeSignature .\SellSpec-<version>-win-x64-singlefile.exe | Format-List Status, TimeStamperCertificate, SignerCertificate
+$version = '1.0.0'   # the release you downloaded
+Get-AuthenticodeSignature ".\SellSpec-$version-win-x64-singlefile.exe" | Format-List Status, TimeStamperCertificate, SignerCertificate
 ```
 
 `Status` must be `Valid` and the signer's subject must name SignPath Foundation. `signtool verify /pa /v <file>` (Windows SDK) gives the same answer. The zip and `SHA256SUMS.txt` cannot carry an Authenticode signature; the checksums cover them.
@@ -162,7 +163,7 @@ Never commit certificates or tokens, never describe a release as signed when the
 
 Independently of signing, the build job attests every release asset with GitHub's [`actions/attest`](https://github.com/actions/attest) (pinned by commit) after `publish.ps1` has run and, when signing is active, after `signing.ps1 -Apply` has replaced the executables. GitHub stores a Sigstore-signed SLSA provenance statement that binds each file's SHA-256 digest to this repository, the release workflow file, the tagged commit and the GitHub-hosted runner that built it. For this the build job holds `id-token: write` (to obtain the OIDC token Sigstore exchanges for a short-lived signing certificate) and `attestations: write` (to store the result with GitHub) in addition to `contents: read`; it still cannot write to the repository.
 
-Before it creates the draft release, the release job runs `gh attestation verify` on every downloaded asset with `--repo`, `--signer-workflow <owner>/<repo>/.github/workflows/release.yml`, `--source-ref refs/tags/<tag>` and `--deny-self-hosted-runners`, so an asset without a matching attestation is never published. Users repeat the check with `gh attestation verify <file> --repo SamJustSam-create/SellSpec`; the attestations are also listed at `https://github.com/SamJustSam-create/SellSpec/attestations`. Attestations are free for public repositories and involve no certificate or key of the project's own, but Windows does not read them, so they do not affect SmartScreen.
+Before it creates the draft release, the release job runs `gh attestation verify` on every downloaded asset with `--repo`, `--signer-workflow <owner>/<repo>/.github/workflows/release.yml`, `--source-ref refs/tags/<tag>` and `--deny-self-hosted-runners`, so an asset without a matching attestation is never published. Users repeat the check with the same flags (the command is in CODE_SIGNING_POLICY.md); the attestations are also listed at `https://github.com/SamJustSam-create/SellSpec/attestations`. Attestations are free for public repositories and involve no certificate or key of the project's own, but Windows does not read them, so they do not affect SmartScreen.
 
 ## Coding conventions
 
